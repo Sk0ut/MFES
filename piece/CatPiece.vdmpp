@@ -1,0 +1,19 @@
+class CatPiece is subclass of Piece
+types
+-- TODO Define types here
+values
+-- TODO Define values here
+	public TYPE : PieceType = "CatPiece";
+	public RANK : nat1 = 2;
+instance variables
+-- TODO Define instance variables here
+operations
+	public CatPiece: Owner ==> CatPiece
+				CatPiece(ow) == Piece(TYPE, ow, RANK)
+	post type = TYPE and owner = ow and rank = RANK;
+-- TODO Define operations here
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end CatPiece

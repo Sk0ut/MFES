@@ -1,0 +1,16 @@
+class Board
+types
+-- TODO Define types here
+public BoardTiles = map Coord to Tile
+values
+-- TODO Define values here
+instance variables
+-- TODO Define instance variables here
+public tiles: BoardTiles
+operations
+-- TODO Define operations here
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end Board

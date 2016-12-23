@@ -1,0 +1,19 @@
+class WaterTile is subclass of Tile
+types
+-- TODO Define types here
+values
+-- TODO Define values here
+	public TYPE : TileType = "WaterTile";
+instance variables
+-- TODO Define instance variables here
+operations
+-- TODO Define operations here
+	public WaterTile: () ==> WaterTile
+		WaterTile() == Tile(TYPE, nil)
+	post type = TYPE and owner = nil
+	
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end WaterTile
