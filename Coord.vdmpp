@@ -5,7 +5,16 @@ values
 -- TODO Define values here
 instance variables
 -- TODO Define instance variables here
+	public row : nat;
+	public col : nat;
 operations
+	public Coord : nat * nat ==> Coord
+	Coord(r, c) == (
+		row := r;
+		col := c;
+		return self;
+	)
+	post row = r and col = c;
 -- TODO Define operations here
 functions
 -- TODO Define functiones here
