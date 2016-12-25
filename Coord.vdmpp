@@ -12,7 +12,7 @@ operations
 	Coord(r, c) == (
 		row := r;
 		col := c;
-		return self;
+		return self
 	)
 	post row = r and col = c;
 -- TODO Define operations here

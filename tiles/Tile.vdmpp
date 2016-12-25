@@ -12,7 +12,7 @@ operations
 	Tile(tt, ow) == (
 		type := tt;
 		owner := ow;
-		return self;
+		return self
 	)
 	post type = tt and owner = ow;
 functions
