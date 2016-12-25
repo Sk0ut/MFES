@@ -1,111 +1,111 @@
 class Board
 types
 -- TODO Define types here
-public BoardTiles = map Coord to Tile;
-public Pieces = map Coord to Piece
+public BoardTiles = map seq of nat to Tile;
+public Pieces = map seq of nat to Piece 
 values
 -- TODO Define values here
 instance variables
 -- TODO Define instance variables here
-public tiles: BoardTiles;
-public pieces: Pieces
+public tiles: BoardTiles := {|->};
+public pieces: Pieces := {|->}
 operations
 -- TODO Define operations here
 		public Board : () ==> Board
 		Board() == (
 			tiles := {
-				new Coord(0,0) |-> new PlainTile(),
-				new Coord(0,1) |-> new PlainTile(),
-				new Coord(0,2) |-> new TrapTile(<PLAYER1>),
-				new Coord(0,3) |-> new DenTile(<PLAYER1>),
-				new Coord(0,4) |-> new TrapTile(<PLAYER1>),
-				new Coord(0,5) |-> new PlainTile(),
-				new Coord(0,6) |-> new PlainTile(),
+				[0, 0] |-> new PlainTile(),
+				[0, 1] |-> new PlainTile(),
+				[0, 2] |-> new TrapTile(<PLAYER1>),
+				[0, 3] |-> new DenTile(<PLAYER1>),
+				[0, 4] |-> new TrapTile(<PLAYER1>),
+				[0, 5] |-> new PlainTile(),
+				[0, 6] |-> new PlainTile(),
 				
-				new Coord(1,0) |-> new PlainTile(),
-				new Coord(1,1) |-> new PlainTile(),
-				new Coord(1,2) |-> new PlainTile(),
-				new Coord(1,3) |-> new TrapTile(<PLAYER1>),
-				new Coord(1,4) |-> new PlainTile(),
-				new Coord(1,5) |-> new PlainTile(),
-				new Coord(1,6) |-> new PlainTile(),
+				[1, 0] |-> new PlainTile(),
+				[1, 1] |-> new PlainTile(),
+				[1, 2] |-> new PlainTile(),
+				[1, 3] |-> new TrapTile(<PLAYER1>),
+				[1, 4] |-> new PlainTile(),
+				[1, 5] |-> new PlainTile(),
+				[1, 6] |-> new PlainTile(),
 				
-				new Coord(2,0) |-> new PlainTile(),
-				new Coord(2,1) |-> new PlainTile(),
-				new Coord(2,2) |-> new PlainTile(),
-				new Coord(2,3) |-> new PlainTile(),
-				new Coord(2,4) |-> new PlainTile(),
-				new Coord(2,5) |-> new PlainTile(),
-				new Coord(2,6) |-> new PlainTile(),
+				[2, 0] |-> new PlainTile(),
+				[2, 1] |-> new PlainTile(),
+				[2, 2] |-> new PlainTile(),
+				[2, 3] |-> new PlainTile(),
+				[2, 4] |-> new PlainTile(),
+				[2, 5] |-> new PlainTile(),
+				[2, 6] |-> new PlainTile(),
 	
-				new Coord(3,0) |-> new PlainTile(),
-				new Coord(3,1) |-> new WaterTile(),
-				new Coord(3,2) |-> new WaterTile(),
-				new Coord(3,3) |-> new PlainTile(),
-				new Coord(3,4) |-> new WaterTile(),
-				new Coord(3,5) |-> new WaterTile(),
-				new Coord(3,6) |-> new PlainTile(),
+				[3, 0] |-> new PlainTile(),
+				[3, 1] |-> new WaterTile(),
+				[3, 2] |-> new WaterTile(),
+				[3, 3] |-> new PlainTile(),
+				[3, 4] |-> new WaterTile(),
+				[3, 5] |-> new WaterTile(),
+				[3, 6] |-> new PlainTile(),
 				
-				new Coord(4,0) |-> new PlainTile(),
-				new Coord(4,1) |-> new WaterTile(),
-				new Coord(4,2) |-> new WaterTile(),
-				new Coord(4,3) |-> new PlainTile(),
-				new Coord(4,4) |-> new WaterTile(),
-				new Coord(4,5) |-> new WaterTile(),
-				new Coord(4,6) |-> new PlainTile(),
+				[4, 0] |-> new PlainTile(),
+				[4, 1] |-> new WaterTile(),
+				[4, 2] |-> new WaterTile(),
+				[4, 3] |-> new PlainTile(),
+				[4, 4] |-> new WaterTile(),
+				[4, 5] |-> new WaterTile(),
+				[4, 6] |-> new PlainTile(),
 				
-				new Coord(5,0) |-> new PlainTile(),
-				new Coord(5,1) |-> new WaterTile(),
-				new Coord(5,2) |-> new WaterTile(),
-				new Coord(5,3) |-> new PlainTile(),
-				new Coord(5,4) |-> new WaterTile(),
-				new Coord(5,5) |-> new WaterTile(),
-				new Coord(5,6) |-> new PlainTile(),
+				[5, 0] |-> new PlainTile(),
+				[5, 1] |-> new WaterTile(),
+				[5, 2] |-> new WaterTile(),
+				[5, 3] |-> new PlainTile(),
+				[5, 4] |-> new WaterTile(),
+				[5, 5] |-> new WaterTile(),
+				[5, 6] |-> new PlainTile(),
 	
-				new Coord(6,0) |-> new PlainTile(),
-				new Coord(6,1) |-> new PlainTile(),
-				new Coord(6,2) |-> new PlainTile(),
-				new Coord(6,3) |-> new PlainTile(),
-				new Coord(6,4) |-> new PlainTile(),
-				new Coord(6,5) |-> new PlainTile(),
-				new Coord(6,6) |-> new PlainTile(),
+				[6, 0] |-> new PlainTile(),
+				[6, 1] |-> new PlainTile(),
+				[6, 2] |-> new PlainTile(),
+				[6, 3] |-> new PlainTile(),
+				[6, 4] |-> new PlainTile(),
+				[6, 5] |-> new PlainTile(),
+				[6, 6] |-> new PlainTile(),
 				
-				new Coord(7,0) |-> new PlainTile(),
-				new Coord(7,1) |-> new PlainTile(),
-				new Coord(7,2) |-> new PlainTile(),
-				new Coord(7,3) |-> new TrapTile(<PLAYER2>),
-				new Coord(7,4) |-> new PlainTile(),
-				new Coord(7,5) |-> new PlainTile(),
-				new Coord(7,6) |-> new PlainTile(),
+				[7, 0] |-> new PlainTile(),
+				[7, 1] |-> new PlainTile(),
+				[7, 2] |-> new PlainTile(),
+				[7, 3] |-> new TrapTile(<PLAYER2>),
+				[7, 4] |-> new PlainTile(),
+				[7, 5] |-> new PlainTile(),
+				[7, 6] |-> new PlainTile(),
 				
-				new Coord(8,0) |-> new PlainTile(),
-				new Coord(8,1) |-> new PlainTile(),
-				new Coord(8,2) |-> new TrapTile(<PLAYER2>),
-				new Coord(8,3) |-> new DenTile(<PLAYER2>),
-				new Coord(8,4) |-> new TrapTile(<PLAYER2>),
-				new Coord(8,5) |-> new PlainTile(),
-				new Coord(8,6) |-> new PlainTile()
+				[8, 0] |-> new PlainTile(),
+				[8, 1] |-> new PlainTile(),
+				[8, 2] |-> new TrapTile(<PLAYER2>),
+				[8, 3] |-> new DenTile(<PLAYER2>),
+				[8, 4] |-> new TrapTile(<PLAYER2>),
+				[8, 5] |-> new PlainTile(),
+				[8, 6] |-> new PlainTile()
 			};
 			
 			
 			pieces := {
-				new Coord(0,0) |-> new TigerPiece(<PLAYER1>),
-				new Coord(0,6) |-> new LionPiece(<PLAYER1>),
-				new Coord(1,1) |-> new CatPiece(<PLAYER1>),
-				new Coord(1,5) |-> new DogPiece(<PLAYER1>),
-				new Coord(2,0) |-> new WolfPiece(<PLAYER1>),
-				new Coord(2,2) |-> new ElephantPiece(<PLAYER1>),
-				new Coord(2,4) |-> new LeopardPiece(<PLAYER1>),
-				new Coord(2,6) |-> new RatPiece(<PLAYER1>),
+				[0, 0] |-> new TigerPiece(<PLAYER1>),
+				[0, 6] |-> new LionPiece(<PLAYER1>),
+				[1, 1] |-> new CatPiece(<PLAYER1>),
+				[1, 5] |-> new DogPiece(<PLAYER1>),
+				[2, 0] |-> new WolfPiece(<PLAYER1>),
+				[2, 2] |-> new ElephantPiece(<PLAYER1>),
+				[2, 4] |-> new LeopardPiece(<PLAYER1>),
+				[2, 6] |-> new RatPiece(<PLAYER1>),
 				
-				new Coord(8,6) |-> new TigerPiece(<PLAYER2>),
-				new Coord(8,0) |-> new LionPiece(<PLAYER2>),
-				new Coord(7,5) |-> new CatPiece(<PLAYER2>),
-				new Coord(7,5) |-> new DogPiece(<PLAYER2>),
-				new Coord(6,6) |-> new WolfPiece(<PLAYER2>),
-				new Coord(6,4) |-> new ElephantPiece(<PLAYER2>),
-				new Coord(6,2) |-> new LeopardPiece(<PLAYER2>),
-				new Coord(6,0) |-> new RatPiece(<PLAYER2>)		
+				[8, 6] |-> new TigerPiece(<PLAYER2>),
+				[8, 0] |-> new LionPiece(<PLAYER2>),
+				[7, 5] |-> new CatPiece(<PLAYER2>),
+				[7, 1] |-> new DogPiece(<PLAYER2>),
+				[6, 6] |-> new WolfPiece(<PLAYER2>),
+				[6, 4] |-> new ElephantPiece(<PLAYER2>),
+				[6, 2] |-> new LeopardPiece(<PLAYER2>),
+				[6, 0] |-> new RatPiece(<PLAYER2>)		
 			};
 			return self
 		);
@@ -116,7 +116,43 @@ operations
 				pieces := p;
 				return self
 		)
-		post tiles = bt and pieces = p
+		post tiles = bt and pieces = p and dom pieces subset dom tiles;
+		
+		public pure validBoard : () ==> bool
+		validBoard() == (
+				for all p in set dom pieces do
+				(
+					if tiles(p).type not in set pieces(p).steppableTiles
+					then return false
+				);
+				return true
+		);
+		
+		public pure validMove : () ==> bool
+		validMove() == (
+				return true
+		);
+		
+		private removePiece : seq of nat ==> ()
+		removePiece(coord) == (
+			pieces := {coord} <-: pieces
+		)
+		pre coord in set dom pieces;
+		
+		private addPiece : seq of nat * Piece ==> ()
+		addPiece(coord, piece) == (
+			pieces := pieces ++ {coord |-> piece}
+		)
+		pre coord not in set dom pieces and coord in set dom tiles;
+		
+		public movePiece : seq of nat * seq of nat ==> ()
+		movePiece(coord1, coord2) == (
+			addPiece(coord2, pieces(coord1));
+			removePiece(coord1);
+		)
+		pre validMove()
+		post validBoard()
+		
 functions
 -- TODO Define functiones here
 traces

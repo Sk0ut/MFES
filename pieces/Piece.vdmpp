@@ -9,14 +9,26 @@ instance variables
 -- TODO Define instance variables here
 	public type : PieceType;
 	public owner : Owner;
-	public rank : nat1
+	public rank : nat1;
+	public steppableTiles : set of seq1 of char
 operations
 -- TODO Define operations here
-	public Piece : PieceType * Owner * nat1 ==> Piece
+	public Piece : PieceType * Owner * nat1 * set of seq1 of char ==> Piece
+		Piece(tt, ow, val, stepTiles) == (
+			type := tt;
+			owner := ow;
+			rank := val;
+			steppableTiles := stepTiles;
+			return self;
+		)
+		post type = tt and owner = ow and rank = val and steppableTiles = stepTiles;
+		
+		public Piece : PieceType * Owner * nat1 ==> Piece
 		Piece(tt, ow, val) == (
 			type := tt;
 			owner := ow;
 			rank := val;
+			steppableTiles := {"PlainTile", "TrapTile", "DenTile"};
 			return self;
 		)
 		post type = tt and owner = ow and rank = val;

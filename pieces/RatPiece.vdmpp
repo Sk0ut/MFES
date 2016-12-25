@@ -9,7 +9,7 @@ instance variables
 -- TODO Define instance variables here
 operations
 	public RatPiece: Owner ==> RatPiece
-				RatPiece(ow) == Piece(TYPE, ow, RANK)
+				RatPiece(ow) == Piece(TYPE, ow, RANK, {"PlainTile", "TrapTile", "DenTile", "WaterTile"})
 	post type = TYPE and owner = ow and rank = RANK;
 -- TODO Define operations here
 functions
