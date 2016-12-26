@@ -1,0 +1,23 @@
+class SwimMove is subclass of Move
+types
+-- TODO Define types here
+values
+	public singleton : SwimMove = new SwimMove();
+	public TYPE : MoveType = "Swim";
+instance variables
+-- TODO Define instance variables here
+operations
+	protected SwimMove : () ==> SwimMove
+	SwimMove() == Move(TYPE)
+	post getType() = TYPE;
+
+	public pure validMove: Board * seq of nat * seq of nat ==> bool
+	validMove(board, src, dest) == (
+		return false;
+	)
+	pre src in set dom board.pieces and dest in set dom board.tiles;
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end SwimMove

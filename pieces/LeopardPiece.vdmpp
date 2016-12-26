@@ -5,6 +5,7 @@ values
 -- TODO Define values here
 	public TYPE : PieceType = "LeopardPiece";
 	public RANK : nat1 = 5;
+	private MOVES : MovesType = {};
 instance variables
 -- TODO Define instance variables here
 operations

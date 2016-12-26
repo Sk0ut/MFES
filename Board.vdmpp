@@ -137,7 +137,7 @@ operations
 		public pure validMove : seq of nat * seq of nat ==> bool
 		validMove(source, dest) == (
 				-- Se for um animal que esta na agua, se o destino for terra e estiver ocupado, o movimento nao e valido
-				if tiles(source).type = "WaterTile" and dest in set dom pieces and tiles(dest).type = "PlainTile" then return false;		
+				if tiles(source).type = WaterTile`TYPE and dest in set dom pieces and tiles(dest).type = "PlainTile" then return false;		
 		
 				-- Se for um animal que esta em terra, se o destino for agua e estiver ocupado, o movimento nao e valido
 				if tiles(source).type = "PlainTile" and dest in set dom pieces and tiles(dest).type = "WaterTile" then return false;		

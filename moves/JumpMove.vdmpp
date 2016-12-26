@@ -1,0 +1,22 @@
+class JumpMove is subclass of Move
+types
+-- TODO Define types here
+values
+	private singleton : JumpMove = new JumpMove();
+	private TYPE : MoveType = "Jump";
+instance variables
+-- TODO Define instance variables here
+operations
+	protected JumpMove : () ==> JumpMove
+	JumpMove() == Move(TYPE)
+	post getType() = TYPE;
+
+	public pure validMove: Board * seq of nat * seq of nat ==> bool
+	validMove(board, src, dest) == (
+		return false;
+	)
+	pre src in set dom board.pieces and dest in set dom board.tiles;
+functions
+traces
+-- TODO Define Combinatorial Test Traces here
+end JumpMove
