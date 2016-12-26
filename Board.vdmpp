@@ -122,15 +122,46 @@ operations
 		validBoard() == (
 				for all p in set dom pieces do
 				(
-					if tiles(p).type not in set pieces(p).steppableTiles
-					then return false
+					-- Se algum animal estiver num tile que nao pode estar, o board e invalido
+					if tiles(p).type not in set pieces(p).steppableTiles then return false;
+					-- Se um animal de algum jogador estiver no seu den, o board e invalido
+					if tiles(p).type = "DenTile" and tiles(p).owner = pieces(p).owner then return false
 				);
 				return true
 		);
 		
-		public pure validMove : () ==> bool
-		validMove() == (
-				return true
+		public pure validMove : seq of nat * seq of nat ==> bool
+		validMove(source, dest) == (
+				-- Se for um animal que esta na agua, se o destino estiver ocupado, o movimento nao e valido
+				if tiles(source).type = "WaterTile" and dest in set dom pieces then return false;		
+		
+				-- Se se mover uma casa na horizontal ou na vertical, o movimento e valido
+				if abs(dest(1)-source(1)) = 1 and source(2) = dest(2)
+				then return true;
+				
+				if abs(dest(2)-source(2)) = 1 and source(1) = dest(1)
+				then return true;
+				
+				-- Se for um leopardo/tigre, pode cruzar a totalidade de um rio na horizontal/vertical, desde que nao exista um rato no caminho
+				if pieces(source).type = "LeopardPiece" or pieces(source).type = "TigerPiece" then (
+						if source(2) = dest(2) then (
+								while source(1) <> dest(1) do (
+									if tiles([source(1), source(2)]).type <> "WaterTile" or pieces([source(1),dest(1)]).type = "RatPiece"
+									then return false;
+									
+								);
+								return true
+						)
+						elseif source(1) = dest(1) then (
+								while source(2) <> dest(2) do (
+									if tiles([source(1), source(2)]).type <> "WaterTile" or pieces([source(1),source(2)]).type = "RatPiece"
+									then return false;
+								return true
+								)
+						)
+						else return false
+				);
+				return false	
 		);
 		
 		private removePiece : seq of nat ==> ()
@@ -150,7 +181,7 @@ operations
 			addPiece(coord2, pieces(coord1));
 			removePiece(coord1);
 		)
-		pre validMove()
+		pre validMove(coord1, coord2)
 		post validBoard()
 		
 functions
