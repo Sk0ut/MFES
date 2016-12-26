@@ -2,8 +2,8 @@ class JumpMove is subclass of Move
 types
 -- TODO Define types here
 values
-	private singleton : JumpMove = new JumpMove();
-	private TYPE : MoveType = "Jump";
+	public singleton : JumpMove = new JumpMove();
+	public TYPE : MoveType = "Jump";
 instance variables
 -- TODO Define instance variables here
 operations

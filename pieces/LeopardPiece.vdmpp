@@ -5,12 +5,12 @@ values
 -- TODO Define values here
 	public TYPE : PieceType = "LeopardPiece";
 	public RANK : nat1 = 5;
-	private MOVES : MovesType = {};
+	private MOVES : MovesType = {StepMove`TYPE};
 instance variables
 -- TODO Define instance variables here
 operations
 	public LeopardPiece: Owner ==> LeopardPiece
-				LeopardPiece(ow) == Piece(TYPE, ow, RANK)
+				LeopardPiece(ow) == Piece(TYPE, ow, RANK, MOVES)
 	post type = TYPE and owner = ow and rank = RANK;
 -- TODO Define operations here
 functions

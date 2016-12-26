@@ -25,15 +25,16 @@ operations
 		)
 		post type = tt and owner = ow and rank = val and steppableTiles = stepTiles and moves = argMoves;
 		
-		public Piece : PieceType * Owner * nat1 ==> Piece
-		Piece(tt, ow, val) == (
+		public Piece : PieceType * Owner * nat1 * MovesType ==> Piece
+		Piece(tt, ow, val, argMoves) == (
 			type := tt;
 			owner := ow;
 			rank := val;
 			steppableTiles := {"PlainTile", "TrapTile", "DenTile"};
+			moves := argMoves;
 			return self;
 		)
-		post type = tt and owner = ow and rank = val;
+		post type = tt and owner = ow and rank = val and moves = argMoves;
 		
 		
 functions

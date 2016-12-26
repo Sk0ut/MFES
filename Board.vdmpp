@@ -10,7 +10,8 @@ instance variables
 -- TODO Define instance variables here
 public tiles: BoardTiles := {|->};
 public pieces: Pieces := {|->};
-private playersWithPieces: set of Piece`Owner := {}
+private playersWithPieces: set of Piece`Owner := {};
+private allowedMoves : set of Move := {StepMove`singleton, JumpMove`singleton, SwimMove`singleton};
 operations
 -- TODO Define operations here
 		public Board : () ==> Board
