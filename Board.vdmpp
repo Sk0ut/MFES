@@ -8,7 +8,8 @@ values
 instance variables
 -- TODO Define instance variables here
 public tiles: BoardTiles := {|->};
-public pieces: Pieces := {|->}
+public pieces: Pieces := {|->};
+private playersWithPieces: set of Piece`Owner := {}
 operations
 -- TODO Define operations here
 		public Board : () ==> Board
@@ -118,6 +119,8 @@ operations
 		)
 		post tiles = bt and pieces = p and dom pieces subset dom tiles;
 		
+		-- MOVE
+		
 		public pure validBoard : () ==> bool
 		validBoard() == (
 				for all p in set dom pieces do
@@ -198,7 +201,29 @@ operations
 			removePiece(coord1);
 		)
 		pre validMove(coord1, coord2)
-		post validBoard()
+		post validBoard();
+		
+		
+		-- WINCON
+		public checkWinCon : () ==> Piece`Owner
+		checkWinCon() == (
+				-- If one of the dens is occupied, the player that occupies it won the game
+				for all coords in set dom pieces do (
+						if tiles(coords).type = "DenTile" then
+								return pieces(coords).owner
+				);
+				
+				-- If a player has lost all pieces the other player won the game
+				playersWithPieces := {};
+				for all coords in set dom pieces do (
+						if pieces(coords).owner not in set playersWithPieces then 
+								playersWithPieces := playersWithPieces union {pieces(coords).owner}
+				);
+				if <PLAYER1> in set playersWithPieces and <PLAYER2> not in set playersWithPieces  then return <PLAYER1>
+				elseif <PLAYER2> in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <PLAYER2>;
+				
+				return nil
+		)
 		
 functions
 -- TODO Define functiones here
