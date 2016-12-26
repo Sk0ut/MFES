@@ -2,7 +2,8 @@ class Board
 types
 -- TODO Define types here
 public BoardTiles = map seq of nat to Tile;
-public Pieces = map seq of nat to Piece 
+public Pieces = map seq of nat to Piece;
+public Winner = <PLAYER1> | <PLAYER2> | <DRAW>
 values
 -- TODO Define values here
 instance variables
@@ -205,7 +206,7 @@ operations
 		
 		
 		-- WINCON
-		public checkWinCon : () ==> Piece`Owner
+		public checkWinCon : () ==> Winner
 		checkWinCon() == (
 				-- If one of the dens is occupied, the player that occupies it won the game
 				for all coords in set dom pieces do (
@@ -220,9 +221,27 @@ operations
 								playersWithPieces := playersWithPieces union {pieces(coords).owner}
 				);
 				if <PLAYER1> in set playersWithPieces and <PLAYER2> not in set playersWithPieces  then return <PLAYER1>
-				elseif <PLAYER2> in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <PLAYER2>;
+				elseif <PLAYER2> in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <PLAYER2>
+				elseif <PLAYER2> not in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <DRAW>
+				else return nil
+		);
+		
+		-- CAPTURE
+		public capture : seq of nat * Piece * Piece ==> set of seq1 of char
+		capture(coord, attacker, defender) == (
+				-- The rat can kill the elephant
+				if attacker.type = "RatPiece" and defender.type = "ElephantPiece" then
+						return {"attacker"};
 				
-				return nil
+				-- The player may capture any enemy piece in one of the player's trap squares regardless of rank.
+				if tiles(coord).type = "TrapTile" then
+						if defender.owner = tiles(coord).owner then return {"defender"}
+						else return {"attacker"};
+				
+				-- Else, return the highest ranked piece. In case of a draw, both get captured
+				if attacker.rank > defender.rank then return {"attacker"}
+				elseif defender.rank > attacker.rank then return {"defender"}
+				else return {"defender", "attacker"}
 		)
 		
 functions
