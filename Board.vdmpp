@@ -132,8 +132,11 @@ operations
 		
 		public pure validMove : seq of nat * seq of nat ==> bool
 		validMove(source, dest) == (
-				-- Se for um animal que esta na agua, se o destino estiver ocupado, o movimento nao e valido
-				if tiles(source).type = "WaterTile" and dest in set dom pieces then return false;		
+				-- Se for um animal que esta na agua, se o destino for terra e estiver ocupado, o movimento nao e valido
+				if tiles(source).type = "WaterTile" and dest in set dom pieces and tiles(dest).type = "PlainTile" then return false;		
+		
+				-- Se for um animal que esta em terra, se o destino for agua e estiver ocupado, o movimento nao e valido
+				if tiles(source).type = "PlainTile" and dest in set dom pieces and tiles(dest).type = "WaterTile" then return false;		
 		
 				-- Se se mover uma casa na horizontal ou na vertical, o movimento e valido
 				if abs(dest(1)-source(1)) = 1 and source(2) = dest(2)
@@ -145,18 +148,31 @@ operations
 				-- Se for um leopardo/tigre, pode cruzar a totalidade de um rio na horizontal/vertical, desde que nao exista um rato no caminho
 				if pieces(source).type = "LeopardPiece" or pieces(source).type = "TigerPiece" then (
 						if source(2) = dest(2) then (
-								while source(1) <> dest(1) do (
-									if tiles([source(1), source(2)]).type <> "WaterTile" or pieces([source(1),dest(1)]).type = "RatPiece"
-									then return false;
-									
-								);
-								return true
+								if source(1) < dest(1) then (
+										for all x in set {source(1), ..., dest(1)} do (
+											if tiles([x, source(2)]).type <> "WaterTile" or pieces([x, source(2)]).type = "RatPiece" then return false
+										);
+										return true;
+								)
+								else (
+										for all x in set {dest(1), ..., source(1)} do (
+											if tiles([x, source(2)]).type <> "WaterTile" or pieces([x, source(2)]).type = "RatPiece" then return false
+										);
+										return true;
+								)
 						)
 						elseif source(1) = dest(1) then (
-								while source(2) <> dest(2) do (
-									if tiles([source(1), source(2)]).type <> "WaterTile" or pieces([source(1),source(2)]).type = "RatPiece"
-									then return false;
-								return true
+								if source(2) < dest(2) then (
+										for all y in set {source(2), ..., dest(2)} do (
+											if tiles([source(1), y]).type <> "WaterTile" or pieces([source(1), y]).type = "RatPiece" then return false
+										);
+										return true;
+								)
+								else (
+										for all y in set {dest(2), ..., source(2)} do (
+											if tiles([source(1), y]).type <> "WaterTile" or pieces([source(1), y]).type = "RatPiece" then return false
+										);
+										return true
 								)
 						)
 						else return false
