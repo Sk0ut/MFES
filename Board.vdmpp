@@ -105,7 +105,7 @@ operations
 				[7, 5] |-> new CatPiece(<PLAYER2>),
 				[7, 1] |-> new DogPiece(<PLAYER2>),
 				[6, 6] |-> new WolfPiece(<PLAYER2>),
-				[6, 4] |-> new ElephantPiece(<PLAYER2>),
+				--[6, 4] |-> new ElephantPiece(<PLAYER2>),
 				[6, 2] |-> new LeopardPiece(<PLAYER2>),
 				[6, 0] |-> new RatPiece(<PLAYER2>)		
 			};
@@ -124,23 +124,26 @@ operations
 		
 		public pure validBoard : () ==> bool
 		validBoard() == (
-				for all p in set dom pieces do
+				for all p in set dom self.pieces do
 				(
 					-- Se algum animal estiver num tile que nao pode estar, o board e invalido
-					if tiles(p).type not in set pieces(p).steppableTiles then return false;
+					if self.tiles(p).type not in set self.pieces(p).steppableTiles then return false;
 					-- Se um animal de algum jogador estiver no seu den, o board e invalido
-					if tiles(p).type = "DenTile" and tiles(p).owner = pieces(p).owner then return false
+					if self.tiles(p).type = "DenTile" and self.tiles(p).owner = self.pieces(p).owner then return false
 				);
 				return true
 		);
 		
 		public pure validMove : seq of nat * seq of nat ==> bool
 		validMove(source, dest) == (
+				-- Se o destino estiver ocupado por uma peca do proprio jogador, o movimento e invalido
+				if dest in set dom self.pieces and self.pieces(dest).owner = <PLAYER1> then return false;
+		
 				-- Se for um animal que esta na agua, se o destino for terra e estiver ocupado, o movimento nao e valido
-				if tiles(source).type = "WaterTile" and dest in set dom pieces and tiles(dest).type = "PlainTile" then return false;		
+				if self.tiles(source).type = "WaterTile" and dest in set dom self.pieces and self.tiles(dest).type = "PlainTile" then return false;		
 		
 				-- Se for um animal que esta em terra, se o destino for agua e estiver ocupado, o movimento nao e valido
-				if tiles(source).type = "PlainTile" and dest in set dom pieces and tiles(dest).type = "WaterTile" then return false;		
+				if self.tiles(source).type = "PlainTile" and dest in set dom self.pieces and self.tiles(dest).type = "WaterTile" then return false;		
 		
 				-- Se se mover uma casa na horizontal ou na vertical, o movimento e valido
 				if abs(dest(1)-source(1)) = 1 and source(2) = dest(2)
@@ -150,31 +153,32 @@ operations
 				then return true;
 				
 				-- Se for um leopardo/tigre, pode cruzar a totalidade de um rio na horizontal/vertical, desde que nao exista um rato no caminho
-				if pieces(source).type = "LeopardPiece" or pieces(source).type = "TigerPiece" then (
+				if self.pieces(source).type = "LeopardPiece" or self.pieces(source).type = "TigerPiece" then (
 						if source(2) = dest(2) then (
 								if source(1) < dest(1) then (
-										for all x in set {source(1), ..., dest(1)} do (
-											if tiles([x, source(2)]).type <> "WaterTile" or pieces([x, source(2)]).type = "RatPiece" then return false
+										for all x in set {source(1)+1, ..., dest(1)-1} do (
+											if self.tiles([x, source(2)]).type <> "WaterTile" or ([x, source(2)] in set dom self.pieces and self.pieces([x, source(2)]).type = "RatPiece") then return false
+
 										);
 										return true;
 								)
 								else (
-										for all x in set {dest(1), ..., source(1)} do (
-											if tiles([x, source(2)]).type <> "WaterTile" or pieces([x, source(2)]).type = "RatPiece" then return false
+										for all x in set {dest(1)+1, ..., source(1)-1} do (
+											if self.tiles([x, source(2)]).type <> "WaterTile" or ([x, source(2)] in set dom self.pieces and self.pieces([x, source(2)]).type = "RatPiece") then return false
 										);
 										return true;
 								)
 						)
 						elseif source(1) = dest(1) then (
 								if source(2) < dest(2) then (
-										for all y in set {source(2), ..., dest(2)} do (
-											if tiles([source(1), y]).type <> "WaterTile" or pieces([source(1), y]).type = "RatPiece" then return false
+										for all y in set {source(2)+1, ..., dest(2)-1} do (
+											if self.tiles([source(1), y]).type <> "WaterTile" or ([source(1), y] in set dom self.pieces and self.pieces([source(1), y]).type = "RatPiece") then return false
 										);
 										return true;
 								)
 								else (
-										for all y in set {dest(2), ..., source(2)} do (
-											if tiles([source(1), y]).type <> "WaterTile" or pieces([source(1), y]).type = "RatPiece" then return false
+										for all y in set {dest(2)+1, ..., source(2)-1} do (
+											if self.tiles([source(1), y]).type <> "WaterTile" or ([source(1), y] in set dom self.pieces and self.pieces([source(1), y]).type = "RatPiece") then return false
 										);
 										return true
 								)
@@ -188,17 +192,17 @@ operations
 		removePiece(coord) == (
 			pieces := {coord} <-: pieces
 		)
-		pre coord in set dom pieces;
+		pre coord in set dom self.pieces;
 		
 		private addPiece : seq of nat * Piece ==> ()
 		addPiece(coord, piece) == (
 			pieces := pieces ++ {coord |-> piece}
 		)
-		pre coord not in set dom pieces and coord in set dom tiles;
+		pre coord not in set dom self.pieces and coord in set dom self.tiles;
 		
 		public movePiece : seq of nat * seq of nat ==> ()
 		movePiece(coord1, coord2) == (
-			addPiece(coord2, pieces(coord1));
+			addPiece(coord2, self.pieces(coord1));
 			removePiece(coord1);
 		)
 		pre validMove(coord1, coord2)
@@ -209,16 +213,16 @@ operations
 		public checkWinCon : () ==> Winner
 		checkWinCon() == (
 				-- If one of the dens is occupied, the player that occupies it won the game
-				for all coords in set dom pieces do (
-						if tiles(coords).type = "DenTile" then
-								return pieces(coords).owner
+				for all coords in set dom self.pieces do (
+						if self.tiles(coords).type = "DenTile" then
+								return self.pieces(coords).owner
 				);
 				
 				-- If a player has lost all pieces the other player won the game
 				playersWithPieces := {};
-				for all coords in set dom pieces do (
-						if pieces(coords).owner not in set playersWithPieces then 
-								playersWithPieces := playersWithPieces union {pieces(coords).owner}
+				for all coords in set dom self.pieces do (
+						if self.pieces(coords).owner not in set playersWithPieces then 
+								playersWithPieces := playersWithPieces union {self.pieces(coords).owner}
 				);
 				if <PLAYER1> in set playersWithPieces and <PLAYER2> not in set playersWithPieces  then return <PLAYER1>
 				elseif <PLAYER2> in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <PLAYER2>
@@ -234,8 +238,8 @@ operations
 						return {"attacker"};
 				
 				-- The player may capture any enemy piece in one of the player's trap squares regardless of rank.
-				if tiles(coord).type = "TrapTile" then
-						if defender.owner = tiles(coord).owner then return {"defender"}
+				if self.tiles(coord).type = "TrapTile" then
+						if defender.owner = self.tiles(coord).owner then return {"defender"}
 						else return {"attacker"};
 				
 				-- Else, return the highest ranked piece. In case of a draw, both get captured
@@ -243,6 +247,7 @@ operations
 				elseif defender.rank > attacker.rank then return {"defender"}
 				else return {"defender", "attacker"}
 		)
+		pre self.pieces(coord) = defender
 		
 functions
 -- TODO Define functiones here
