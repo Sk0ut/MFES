@@ -3,7 +3,7 @@ types
 -- TODO Define types here
 public BoardTiles = map seq of nat to Tile;
 public Pieces = map seq of nat to Piece;
-public Winner = <PLAYER1> | <PLAYER2> | <DRAW>
+public Player = <PLAYER1> | <PLAYER2> | <DRAW>
 values
 -- TODO Define values here
 instance variables
@@ -12,6 +12,8 @@ public tiles: BoardTiles := {|->};
 public pieces: Pieces := {|->};
 private playersWithPieces: set of Piece`Owner := {};
 private allowedMoves : set of Move := {StepMove`singleton, JumpMove`singleton, SwimMove`singleton};
+public currentPlayer : Player := <PLAYER1>
+
 operations
 -- TODO Define operations here
 		public Board : () ==> Board
@@ -106,7 +108,7 @@ operations
 				[7, 5] |-> new CatPiece(<PLAYER2>),
 				[7, 1] |-> new DogPiece(<PLAYER2>),
 				[6, 6] |-> new WolfPiece(<PLAYER2>),
-				--[6, 4] |-> new ElephantPiece(<PLAYER2>),
+				[6, 4] |-> new ElephantPiece(<PLAYER2>),
 				[6, 2] |-> new LeopardPiece(<PLAYER2>),
 				[6, 0] |-> new RatPiece(<PLAYER2>)		
 			};
@@ -137,6 +139,12 @@ operations
 		
 		public pure validMove : seq of nat * seq of nat ==> bool
 		validMove(source, dest) == (
+				-- Se na origem nao estiver uma peca, o movimento e invalido
+				if source not in set dom self.pieces then return false;
+				
+				-- Se a peca que la estiver nao for do jogador atual a jogar, o movimento e invalido
+				if self.pieces(source).owner <> self.currentPlayer then return false;
+		
 				-- Se o destino estiver ocupado por uma peca do proprio jogador, o movimento e invalido
 				if dest in set dom self.pieces and self.pieces(dest).owner = <PLAYER1> then return false;
 		
@@ -203,15 +211,29 @@ operations
 		
 		public movePiece : seq of nat * seq of nat ==> ()
 		movePiece(coord1, coord2) == (
+			if coord2 in set dom self.pieces then (
+					if capture(coord2, self.pieces(coord1), self.pieces(coord2)) = {"attacker", "defender"} then (
+							removePiece(coord1);
+							removePiece(coord2);
+							changePlayer();
+							return
+					)
+					elseif capture(coord2, self.pieces(coord1), self.pieces(coord2)) = {"defender"} then (
+							removePiece(coord1);
+							changePlayer();
+							return
+					)
+			);
 			addPiece(coord2, self.pieces(coord1));
 			removePiece(coord1);
+			changePlayer();
 		)
 		pre validMove(coord1, coord2)
 		post validBoard();
 		
 		
 		-- WINCON
-		public checkWinCon : () ==> Winner
+		public checkWinCon : () ==> Player
 		checkWinCon() == (
 				-- If one of the dens is occupied, the player that occupies it won the game
 				for all coords in set dom self.pieces do (
@@ -248,8 +270,15 @@ operations
 				elseif defender.rank > attacker.rank then return {"defender"}
 				else return {"defender", "attacker"}
 		)
-		pre self.pieces(coord) = defender
+		pre self.pieces(coord) = defender;
 		
+		-- CHANGE PLAYER
+		private changePlayer : () ==> ()
+		changePlayer() == (
+				if self.currentPlayer = <PLAYER1> then currentPlayer := <PLAYER2>
+				else currentPlayer := <PLAYER1>
+		)
+
 functions
 -- TODO Define functiones here
 traces
