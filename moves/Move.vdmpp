@@ -1,0 +1,27 @@
+class Move
+types
+	public MoveType = seq1 of char;
+values
+-- TODO Define values here
+instance variables
+	private type : MoveType;
+operations
+	protected Move: MoveType ==> Move
+	Move(argType) == (
+		type := argType;
+		return self;
+	)
+	post type = argType;
+
+	public pure validMove: Board * seq of nat * seq of nat ==> bool
+	validMove(board, src, dest) == is subclass responsibility
+	pre src in set dom board.pieces and dest in set dom board.tiles;
+	
+	public pure getType: () ==> MoveType
+	getType() == return type;
+	
+functions
+-- TODO Define functiones here
+traces
+-- TODO Define Combinatorial Test Traces here
+end Move

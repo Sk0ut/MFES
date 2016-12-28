@@ -3,35 +3,38 @@ types
 -- TODO Define types here
 	public PieceType = seq1 of char;
 	public Owner = <PLAYER1> | <PLAYER2>;
+	public MovesType = set of Move`MoveType;
 values
 -- TODO Define values here
 instance variables
--- TODO Define instance variables here
 	public type : PieceType;
 	public owner : Owner;
+	public moves : MovesType;
 	public rank : nat1;
 	public steppableTiles : set of seq1 of char
 operations
 -- TODO Define operations here
-	public Piece : PieceType * Owner * nat1 * set of seq1 of char ==> Piece
-		Piece(tt, ow, val, stepTiles) == (
+	public Piece : PieceType * Owner * nat1 * set of seq1 of char * MovesType ==> Piece
+		Piece(tt, ow, val, stepTiles, argMoves) == (
 			type := tt;
 			owner := ow;
 			rank := val;
 			steppableTiles := stepTiles;
+			moves := argMoves;
 			return self;
 		)
-		post type = tt and owner = ow and rank = val and steppableTiles = stepTiles;
+		post type = tt and owner = ow and rank = val and steppableTiles = stepTiles and moves = argMoves;
 		
-		public Piece : PieceType * Owner * nat1 ==> Piece
-		Piece(tt, ow, val) == (
+		public Piece : PieceType * Owner * nat1 * MovesType ==> Piece
+		Piece(tt, ow, val, argMoves) == (
 			type := tt;
 			owner := ow;
 			rank := val;
 			steppableTiles := {"PlainTile", "TrapTile", "DenTile"};
+			moves := argMoves;
 			return self;
 		)
-		post type = tt and owner = ow and rank = val;
+		post type = tt and owner = ow and rank = val and moves = argMoves;
 		
 		
 functions
