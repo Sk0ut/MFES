@@ -2,13 +2,12 @@ class SwimMove is subclass of Move
 types
 -- TODO Define types here
 values
-	public singleton : SwimMove = new SwimMove();
 	public TYPE : MoveType = "Swim";
 	public PIECES : set of Piece`PieceType = {RatPiece`TYPE};
 instance variables
 -- TODO Define instance variables here
 operations
-	protected SwimMove : () ==> SwimMove
+	public SwimMove : () ==> SwimMove
 	SwimMove() == Move(TYPE, PIECES)
 	post getType() = TYPE and getAllowedPieces() = PIECES;
 

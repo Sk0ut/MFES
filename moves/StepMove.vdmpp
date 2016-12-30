@@ -2,7 +2,6 @@ class StepMove is subclass of Move
 types
 -- TODO Define types here
 values
-	public singleton : StepMove = new StepMove();
 	public TYPE : MoveType = "Step";
 	public PIECES : set of Piece`PieceType = {
 		CatPiece`TYPE, DogPiece`TYPE, ElephantPiece`TYPE, LeopardPiece`TYPE, LionPiece`TYPE, RatPiece`TYPE,
@@ -10,7 +9,7 @@ values
 	};
 instance variables
 operations
-	protected StepMove : () ==> StepMove
+	public StepMove : () ==> StepMove
 	StepMove()  == Move(TYPE, PIECES)
 	post getType() = TYPE and getAllowedPieces() = PIECES;
 

@@ -14,7 +14,7 @@ instance variables
 public tiles: BoardTiles := {|->};
 public pieces: Pieces := {|->};
 private playersWithPieces: set of Piece`Owner := {};
-private allowedMoves : set of Move := {StepMove`singleton, JumpMove`singleton, SwimMove`singleton};
+private allowedMoves : set of Move := {new StepMove(), new JumpMove(), new SwimMove()};
 public currentPlayer : Player := <PLAYER1>
 
 operations

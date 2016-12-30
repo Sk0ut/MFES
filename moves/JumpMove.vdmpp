@@ -2,13 +2,12 @@ class JumpMove is subclass of Move
 types
 -- TODO Define types here
 values
-	public singleton : JumpMove = new JumpMove();
 	public TYPE : MoveType = "Jump";
 	public PIECES : set of Piece`PieceType = {LionPiece`TYPE, TigerPiece`TYPE};
 instance variables
 -- TODO Define instance variables here
 operations
-	protected JumpMove : () ==> JumpMove
+	public JumpMove : () ==> JumpMove
 	JumpMove() == Move(TYPE, PIECES)
 	post getType() = TYPE and getAllowedPieces() = PIECES;
 
