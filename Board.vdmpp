@@ -105,8 +105,10 @@ instance variables
 	public pieces: Pieces;
 	private allowedMoves : set of Move := {new StepMove(), new JumpMove(), new SwimMove()};
 	public currentPlayer : Player;
+	public winner : [Player];
 	
 	inv validBoard();
+	inv dom pieces subset dom tiles;
 
 operations
 		public Board : () ==> Board
@@ -116,6 +118,7 @@ operations
 		Board(bt, p) == (
 				tiles := bt;
 				pieces := p;
+				winner := nil;
 				currentPlayer := <PLAYER1>;
 				return self
 		)
@@ -131,9 +134,9 @@ operations
 					-- Se algum animal estiver num tile que nao pode estar, o board e invalido
 					if self.tiles(p).type not in set self.pieces(p).steppableTiles then return false;
 					-- Se um animal de algum jogador estiver no seu den, o board e invalido
-					if self.tiles(p).type = "DenTile" and self.tiles(p).owner = self.pieces(p).owner then return false
+					if self.tiles(p).type = DenTile`TYPE and self.tiles(p).owner = self.pieces(p).owner then return false
 				);
-				return true
+				return true;
 		);
 		
 		public pure validMove : Coords * Coords ==> bool
@@ -161,34 +164,36 @@ operations
 		removePiece(coord) == (
 			pieces := {coord} <-: pieces
 		)
-		pre coord in set dom self.pieces;
+		pre coord in set dom self.pieces
+		post coord not in set dom self.pieces;
 		
 		private addPiece : Coords * Piece ==> ()
 		addPiece(coord, piece) == (
 			pieces := pieces ++ {coord |-> piece}
 		)
-		pre coord not in set dom self.pieces and coord in set dom self.tiles;
+		pre coord not in set dom self.pieces and coord in set dom self.tiles
+		post self.pieces(coord) = piece;
 		
 		public movePiece : Coords * Coords ==> ()
-		movePiece(coord1, coord2) == (
-			if coord2 in set dom self.pieces then (
-					if capture(coord2, self.pieces(coord1), self.pieces(coord2)) = {"attacker", "defender"} then (
-							removePiece(coord1);
-							removePiece(coord2);
-							changePlayer();
-							return
-					)
-					elseif capture(coord2, self.pieces(coord1), self.pieces(coord2)) = {"defender"} then (
-							removePiece(coord1);
-							changePlayer();
-							return
-					)
+		movePiece(src, dest) == (
+			dcl pieceToMove : Piece := self.pieces(src);
+			
+			if dest in set dom self.pieces then (
+					dcl defender : Piece := self.pieces(dest);
+					dcl winnerPiece : Piece := capture(dest, pieceToMove, defender);
+					removePiece(src);
+					removePiece(dest);
+					addPiece(dest, winnerPiece);
+					
+			) else (
+				removePiece(src);
+				addPiece(dest, pieceToMove);
 			);
-			addPiece(coord2, self.pieces(coord1));
-			removePiece(coord1);
+			
 			changePlayer();
 		)
-		pre validMove(coord1, coord2);
+		pre validMove(src, dest)
+		post src not in set dom pieces and dest in set dom pieces;
 		
 		
 		-- WINCON
@@ -197,7 +202,7 @@ operations
 				dcl playersWithPieces : set of Piece`Owner := {};
 				-- If one of the dens is occupied, the player that occupies it won the game
 				for all coords in set dom self.pieces do (
-						if self.tiles(coords).type = "DenTile" then
+						if self.tiles(coords).type = DenTile`TYPE then
 								return self.pieces(coords).owner
 				);
 				-- If a player has lost all pieces the other player won the game
@@ -212,23 +217,23 @@ operations
 		);
 		
 		-- CAPTURE
-		public capture : Coords * Piece * Piece ==> set of seq1 of char
+		public capture : Coords * Piece * Piece ==> Piece
 		capture(coord, attacker, defender) == (
-				-- The rat can kill the elephant
-				if attacker.type = "RatPiece" and defender.type = "ElephantPiece" then
-						return {"attacker"};
-				
+			dcl tile : Tile := self.tiles(coord);
 				-- The player may capture any enemy piece in one of the player's trap squares regardless of rank.
-				if self.tiles(coord).type = "TrapTile" then
-						if defender.owner = self.tiles(coord).owner then return {"defender"}
-						else return {"attacker"};
+				if tile.type = TrapTile`TYPE then
+						if attacker.owner = tile.owner then return attacker
+						else return defender;
+						
+				-- The rat can kill the elephant
+				if attacker.type = RatPiece`TYPE and defender.type = ElephantPiece`TYPE then
+						return attacker;
 				
-				-- Else, return the highest ranked piece. In case of a draw, both get captured
-				if attacker.rank > defender.rank then return {"attacker"}
-				elseif defender.rank > attacker.rank then return {"defender"}
-				else return {"defender", "attacker"}
+				-- Else, return the highest ranked piece. In the case of draw, the attacker wins
+				if attacker.rank >= defender.rank then return attacker
+				else return defender;
 		)
-		pre self.pieces(coord) = defender;
+		pre coord in set dom pieces and self.pieces(coord) = defender;
 		
 		-- CHANGE PLAYER
 		private changePlayer : () ==> ()
