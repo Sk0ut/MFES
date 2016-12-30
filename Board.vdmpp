@@ -101,8 +101,8 @@ operations
 				[0, 6] |-> new LionPiece(<PLAYER1>),
 				[1, 1] |-> new CatPiece(<PLAYER1>),
 				[1, 5] |-> new DogPiece(<PLAYER1>),
-				[2, 0] |-> new WolfPiece(<PLAYER1>),
-				[2, 2] |-> new ElephantPiece(<PLAYER1>),
+				[2, 0] |-> new ElephantPiece(<PLAYER1>),
+				[2, 2] |-> new WolfPiece(<PLAYER1>),
 				[2, 4] |-> new LeopardPiece(<PLAYER1>),
 				[2, 6] |-> new RatPiece(<PLAYER1>),
 				
@@ -110,8 +110,8 @@ operations
 				[8, 0] |-> new LionPiece(<PLAYER2>),
 				[7, 5] |-> new CatPiece(<PLAYER2>),
 				[7, 1] |-> new DogPiece(<PLAYER2>),
-				[6, 6] |-> new WolfPiece(<PLAYER2>),
-				[6, 4] |-> new ElephantPiece(<PLAYER2>),
+				[6, 6] |-> new ElephantPiece(<PLAYER2>),
+				[6, 4] |-> new WolfPiece(<PLAYER2>),
 				[6, 2] |-> new LeopardPiece(<PLAYER2>),
 				[6, 0] |-> new RatPiece(<PLAYER2>)		
 			};
