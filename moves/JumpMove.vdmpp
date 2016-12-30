@@ -4,18 +4,60 @@ types
 values
 	public singleton : JumpMove = new JumpMove();
 	public TYPE : MoveType = "Jump";
+	public PIECES : set of Piece`PieceType = {LionPiece`TYPE, TigerPiece`TYPE};
 instance variables
 -- TODO Define instance variables here
 operations
 	protected JumpMove : () ==> JumpMove
-	JumpMove() == Move(TYPE)
-	post getType() = TYPE;
+	JumpMove() == Move(TYPE, PIECES)
+	post getType() = TYPE and getAllowedPieces() = PIECES;
 
-	public pure validMove: Board * seq of nat * seq of nat ==> bool
+	public pure validMove: Board * Board`Coords * Board`Coords ==> bool
 	validMove(board, src, dest) == (
-		return false;
+		dcl piece : Piece := board.pieces(src);
+		dcl srcTile : Tile := board.tiles(src);
+		dcl destTile : Tile := board.tiles(dest);
+		
+		if piece.type not in set getAllowedPieces() then
+			return false;
+			
+		if srcTile.type = WaterTile`TYPE or destTile.type = WaterTile`TYPE then
+			return false;
+			
+		if sameCol(src, dest) then (
+			dcl col : nat := src(Board`COL);
+			if src(Board`ROW) < dest(Board`ROW) then (
+				for all row in set {src(Board`ROW)+1, ..., dest(Board`ROW)-1} do (
+					if board.tiles([row, col]).type <> WaterTile`TYPE or [row, col] in set dom board.pieces then
+						return false;
+				);		
+			)
+			else (
+				for all row in set {dest(Board`ROW)+1, ..., src(Board`ROW)-1} do (
+					if board.tiles([row, col]).type <> WaterTile`TYPE or [row, col] in set dom board.pieces then
+						return false;
+				);
+			);
+		)
+		elseif sameRow(src, dest) then (
+			dcl row : nat := src(Board`ROW);
+			if src(Board`COL) < dest(Board`COL) then (
+				for all col in set {src(Board`COL)+1, ..., dest(Board`COL)-1} do (
+					if board.tiles([row, col]).type <> WaterTile`TYPE or [row, col] in set dom board.pieces then
+						return false;
+				);		
+			)
+			else (
+				for all col in set {dest(Board`COL)+1, ..., src(Board`COL)-1} do (
+					if board.tiles([row, col]).type <> WaterTile`TYPE or [row, col] in set dom board.pieces then
+						return false;
+				);
+			);
+		);
+			
+		return true; 
 	)
-	pre src in set dom board.pieces and dest in set dom board.tiles;
+	pre src in set dom board.pieces and dest in set dom board.tiles and src <> dest;
 functions
 traces
 -- TODO Define Combinatorial Test Traces here

@@ -4,17 +4,38 @@ types
 values
 	public singleton : StepMove = new StepMove();
 	public TYPE : MoveType = "Step";
+	public PIECES : set of Piece`PieceType = {
+		CatPiece`TYPE, DogPiece`TYPE, ElephantPiece`TYPE, LeopardPiece`TYPE, LionPiece`TYPE, RatPiece`TYPE,
+		TigerPiece`TYPE, WolfPiece`TYPE
+	};
 instance variables
 operations
 	protected StepMove : () ==> StepMove
-	StepMove()  == Move(TYPE)
-	post getType() = TYPE;
+	StepMove()  == Move(TYPE, PIECES)
+	post getType() = TYPE and getAllowedPieces() = PIECES;
 
-	public pure validMove: Board * seq of nat * seq of nat ==> bool
-	validMove(board, src, dest) == (
-		return false;
-	)
-	pre src in set dom board.pieces and dest in set dom board.tiles;
+	public pure validMove: Board * Board`Coords * Board`Coords ==> bool
+	validMove(board, src, dest) == 
+		(
+			dcl piece : Piece := board.pieces(src);
+			dcl srcTile : Tile := board.tiles(src);
+			dcl destTile : Tile := board.tiles(dest);
+		
+			if (piece.type not in set getAllowedPieces()) then
+				return false;
+			
+			if (not adjacentTiles(src, dest)) then
+				return false;
+
+			if (srcTile.type = WaterTile`TYPE or destTile.type = WaterTile`TYPE) then
+				return false;
+				
+			if (destTile.type = DenTile`TYPE and destTile.owner = piece.owner) then
+				return false;
+				
+			return true;
+		)
+	pre src in set dom board.pieces and dest in set dom board.tiles and src <> dest;
 functions
 -- TODO Define functiones here
 traces

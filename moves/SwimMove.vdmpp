@@ -4,18 +4,41 @@ types
 values
 	public singleton : SwimMove = new SwimMove();
 	public TYPE : MoveType = "Swim";
+	public PIECES : set of Piece`PieceType = {RatPiece`TYPE};
 instance variables
 -- TODO Define instance variables here
 operations
 	protected SwimMove : () ==> SwimMove
-	SwimMove() == Move(TYPE)
-	post getType() = TYPE;
+	SwimMove() == Move(TYPE, PIECES)
+	post getType() = TYPE and getAllowedPieces() = PIECES;
 
-	public pure validMove: Board * seq of nat * seq of nat ==> bool
+	public pure validMove: Board * Board`Coords * Board`Coords ==> bool
 	validMove(board, src, dest) == (
+		dcl piece : Piece := board.pieces(src);
+		dcl srcTile : Tile := board.tiles(src);
+		dcl destTile : Tile := board.tiles(dest);
+		
+		if (piece.type not in set getAllowedPieces()) then
+			return false;
+		
+		if (not adjacentTiles(src, dest)) then
+			return false;
+			
+		if (srcTile.type = PlainTile`TYPE) then
+			return destTile.type = WaterTile`TYPE and dest not in set dom board.pieces;
+			
+		if (not (srcTile.type = WaterTile`TYPE)) then
+			return false;
+		
+		if (destTile.type = WaterTile`TYPE) then
+			return true;
+			
+		if (destTile.type = PlainTile`TYPE) then
+			return dest not in set dom board.pieces;
+		
 		return false;
 	)
-	pre src in set dom board.pieces and dest in set dom board.tiles;
+	pre src in set dom board.pieces and dest in set dom board.tiles and src <> dest;
 functions
 -- TODO Define functiones here
 traces

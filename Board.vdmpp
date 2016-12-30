@@ -1,11 +1,14 @@
 class Board
 types
 -- TODO Define types here
-public BoardTiles = map seq of nat to Tile;
-public Pieces = map seq of nat to Piece;
-public Player = <PLAYER1> | <PLAYER2> | <DRAW>
+public Coords = seq of nat
+	inv c == len(c) = 2;
+public BoardTiles = map Coords to Tile;
+public Pieces = map Coords to Piece;
+public Player = <PLAYER1> | <PLAYER2> | <DRAW>;
 values
--- TODO Define values here
+public ROW : nat1 = 1;
+public COL : nat1 = 2;
 instance variables
 -- TODO Define instance variables here
 public tiles: BoardTiles := {|->};
@@ -137,79 +140,36 @@ operations
 				return true
 		);
 		
-		public pure validMove : seq of nat * seq of nat ==> bool
+		public pure validMove : Coords * Coords ==> bool
 		validMove(source, dest) == (
 				-- Se na origem nao estiver uma peca, o movimento e invalido
 				if source not in set dom self.pieces then return false;
+				
+				if source = dest then return false;
 				
 				-- Se a peca que la estiver nao for do jogador atual a jogar, o movimento e invalido
 				if self.pieces(source).owner <> self.currentPlayer then return false;
 		
 				-- Se o destino estiver ocupado por uma peca do proprio jogador, o movimento e invalido
 				if dest in set dom self.pieces and self.pieces(dest).owner = <PLAYER1> then return false;
-		
-				-- Se for um animal que esta na agua, se o destino for terra e estiver ocupado, o movimento nao e valido
-				if self.tiles(source).type = "WaterTile" and dest in set dom self.pieces and self.tiles(dest).type = "PlainTile" then return false;		
-		
-				-- Se for um animal que esta em terra, se o destino for agua e estiver ocupado, o movimento nao e valido
-				if self.tiles(source).type = "PlainTile" and dest in set dom self.pieces and self.tiles(dest).type = "WaterTile" then return false;		
-		
-				-- Se se mover uma casa na horizontal ou na vertical, o movimento e valido
-				if abs(dest(1)-source(1)) = 1 and source(2) = dest(2)
-				then return true;
 				
-				if abs(dest(2)-source(2)) = 1 and source(1) = dest(1)
-				then return true;
-				
-				-- Se for um leopardo/tigre, pode cruzar a totalidade de um rio na horizontal/vertical, desde que nao exista um rato no caminho
-				if self.pieces(source).type = "LeopardPiece" or self.pieces(source).type = "TigerPiece" then (
-						if source(2) = dest(2) then (
-								if source(1) < dest(1) then (
-										for all x in set {source(1)+1, ..., dest(1)-1} do (
-											if self.tiles([x, source(2)]).type <> "WaterTile" or ([x, source(2)] in set dom self.pieces and self.pieces([x, source(2)]).type = "RatPiece") then return false
-
-										);
-										return true;
-								)
-								else (
-										for all x in set {dest(1)+1, ..., source(1)-1} do (
-											if self.tiles([x, source(2)]).type <> "WaterTile" or ([x, source(2)] in set dom self.pieces and self.pieces([x, source(2)]).type = "RatPiece") then return false
-										);
-										return true;
-								)
-						)
-						elseif source(1) = dest(1) then (
-								if source(2) < dest(2) then (
-										for all y in set {source(2)+1, ..., dest(2)-1} do (
-											if self.tiles([source(1), y]).type <> "WaterTile" or ([source(1), y] in set dom self.pieces and self.pieces([source(1), y]).type = "RatPiece") then return false
-										);
-										return true;
-								)
-								else (
-										for all y in set {dest(2)+1, ..., source(2)-1} do (
-											if self.tiles([source(1), y]).type <> "WaterTile" or ([source(1), y] in set dom self.pieces and self.pieces([source(1), y]).type = "RatPiece") then return false
-										);
-										return true
-								)
-						)
-						else return false
-				);
-				return false	
+				-- O movimento só é válido se uma das jogadas permitidas o considerar válido
+				return exists move in set self.allowedMoves & move.validMove(self, source, dest);
 		);
 		
-		private removePiece : seq of nat ==> ()
+		private removePiece : Coords ==> ()
 		removePiece(coord) == (
 			pieces := {coord} <-: pieces
 		)
 		pre coord in set dom self.pieces;
 		
-		private addPiece : seq of nat * Piece ==> ()
+		private addPiece : Coords * Piece ==> ()
 		addPiece(coord, piece) == (
 			pieces := pieces ++ {coord |-> piece}
 		)
 		pre coord not in set dom self.pieces and coord in set dom self.tiles;
 		
-		public movePiece : seq of nat * seq of nat ==> ()
+		public movePiece : Coords * Coords ==> ()
 		movePiece(coord1, coord2) == (
 			if coord2 in set dom self.pieces then (
 					if capture(coord2, self.pieces(coord1), self.pieces(coord2)) = {"attacker", "defender"} then (
@@ -254,7 +214,7 @@ operations
 		);
 		
 		-- CAPTURE
-		public capture : seq of nat * Piece * Piece ==> set of seq1 of char
+		public capture : Coords * Piece * Piece ==> set of seq1 of char
 		capture(coord, attacker, defender) == (
 				-- The rat can kill the elephant
 				if attacker.type = "RatPiece" and defender.type = "ElephantPiece" then
