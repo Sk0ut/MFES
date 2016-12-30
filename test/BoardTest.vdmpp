@@ -1,0 +1,17 @@
+class BoardTest is subclass of TestCase
+operations
+
+	public testMove: () ==> ()
+	testMove() == (
+		dcl board : Board := new Board();
+		dcl src : Board`Coords := [2,6];
+		dcl dest : Board`Coords := [3,6];
+		dcl mousePiece : Piece := board.pieces(src);
+		
+		assertTrue(mousePiece.type = RatPiece`TYPE and mousePiece.owner = <PLAYER1>);
+		board.movePiece(src, dest);
+		assertTrue(board.pieces(dest) = mousePiece);
+		assertTrue(src not in set dom board.pieces);
+	);
+  
+end BoardTest 

@@ -1,27 +1,14 @@
 class Board
 types
--- TODO Define types here
-public Coords = seq of nat
-	inv c == len(c) = 2;
-public BoardTiles = map Coords to Tile;
-public Pieces = map Coords to Piece;
-public Player = <PLAYER1> | <PLAYER2> | <DRAW>;
+	public Coords = seq of nat
+		inv c == len(c) = 2;
+	public BoardTiles = map Coords to Tile;
+	public Pieces = map Coords to Piece;
+	public Player = <PLAYER1> | <PLAYER2> | <DRAW>;
 values
-public ROW : nat1 = 1;
-public COL : nat1 = 2;
-instance variables
--- TODO Define instance variables here
-public tiles: BoardTiles := {|->};
-public pieces: Pieces := {|->};
-private playersWithPieces: set of Piece`Owner := {};
-private allowedMoves : set of Move := {new StepMove(), new JumpMove(), new SwimMove()};
-public currentPlayer : Player := <PLAYER1>
-
-operations
--- TODO Define operations here
-		public Board : () ==> Board
-		Board() == (
-			tiles := {
+	public ROW : nat1 = 1;
+	public COL : nat1 = 2;
+	public DEFAULT_TILES : BoardTiles = {
 				[0, 0] |-> new PlainTile(),
 				[0, 1] |-> new PlainTile(),
 				[0, 2] |-> new TrapTile(<PLAYER1>),
@@ -94,9 +81,7 @@ operations
 				[8, 5] |-> new PlainTile(),
 				[8, 6] |-> new PlainTile()
 			};
-			
-			
-			pieces := {
+	public DEFAULT_PIECES : Pieces = {
 				[0, 0] |-> new TigerPiece(<PLAYER1>),
 				[0, 6] |-> new LionPiece(<PLAYER1>),
 				[1, 1] |-> new CatPiece(<PLAYER1>),
@@ -115,16 +100,26 @@ operations
 				[6, 2] |-> new LeopardPiece(<PLAYER2>),
 				[6, 0] |-> new RatPiece(<PLAYER2>)		
 			};
-			return self
-		);
+instance variables
+	public tiles: BoardTiles;
+	public pieces: Pieces;
+	private playersWithPieces: set of Piece`Owner := {};
+	private allowedMoves : set of Move := {new StepMove(), new JumpMove(), new SwimMove()};
+	public currentPlayer : Player;
+
+operations
+		public Board : () ==> Board
+		Board() == Board(DEFAULT_TILES, DEFAULT_PIECES);
 		
 		public Board : BoardTiles * Pieces ==> Board
 		Board(bt, p) == (
 				tiles := bt;
 				pieces := p;
+				currentPlayer := <PLAYER1>;
 				return self
 		)
-		post tiles = bt and pieces = p and dom pieces subset dom tiles;
+		pre dom p subset dom bt
+		post tiles = bt and pieces = p;
 		
 		-- MOVE
 		
