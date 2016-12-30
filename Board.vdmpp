@@ -103,9 +103,10 @@ values
 instance variables
 	public tiles: BoardTiles;
 	public pieces: Pieces;
-	private playersWithPieces: set of Piece`Owner := {};
 	private allowedMoves : set of Move := {new StepMove(), new JumpMove(), new SwimMove()};
 	public currentPlayer : Player;
+	
+	inv validBoard();
 
 operations
 		public Board : () ==> Board
@@ -137,9 +138,13 @@ operations
 		
 		public pure validMove : Coords * Coords ==> bool
 		validMove(source, dest) == (
+				-- Se as posições não existirem no tabuleiro, o movimento é inválido
+				if not ({source, dest} subset dom self.tiles) then return false; 
+		
 				-- Se na origem nao estiver uma peca, o movimento e invalido
 				if source not in set dom self.pieces then return false;
 				
+				-- A origem não pode ser igual ao destino
 				if source = dest then return false;
 				
 				-- Se a peca que la estiver nao for do jogador atual a jogar, o movimento e invalido
@@ -183,21 +188,19 @@ operations
 			removePiece(coord1);
 			changePlayer();
 		)
-		pre validMove(coord1, coord2)
-		post validBoard();
+		pre validMove(coord1, coord2);
 		
 		
 		-- WINCON
 		public checkWinCon : () ==> Player
 		checkWinCon() == (
+				dcl playersWithPieces : set of Piece`Owner := {};
 				-- If one of the dens is occupied, the player that occupies it won the game
 				for all coords in set dom self.pieces do (
 						if self.tiles(coords).type = "DenTile" then
 								return self.pieces(coords).owner
 				);
-				
 				-- If a player has lost all pieces the other player won the game
-				playersWithPieces := {};
 				for all coords in set dom self.pieces do (
 						if self.pieces(coords).owner not in set playersWithPieces then 
 								playersWithPieces := playersWithPieces union {self.pieces(coords).owner}
