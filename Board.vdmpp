@@ -112,7 +112,13 @@ instance variables
 
 operations
 		public Board : () ==> Board
-		Board() == Board(DEFAULT_TILES, DEFAULT_PIECES);
+		Board() == Board(DEFAULT_TILES, DEFAULT_PIECES)
+		post tiles = DEFAULT_TILES and pieces = DEFAULT_PIECES;
+		
+		public Board : Pieces ==> Board
+		Board(piecesArg) == Board(DEFAULT_TILES, piecesArg)
+		pre dom piecesArg subset dom DEFAULT_TILES
+		post tiles = DEFAULT_TILES and pieces = piecesArg;
 		
 		public Board : BoardTiles * Pieces ==> Board
 		Board(bt, p) == (
