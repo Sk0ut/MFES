@@ -16,8 +16,24 @@ operations
 		assertTrue(src not in set dom board.pieces);
 	);
 	
-	public testSwimMove: () ==> ()
-	testSwimMove() == (
+	public testSwimMoveInWater: () ==> ()
+	testSwimMoveInWater() == (
+		dcl src : Board`Coords := [3,5];
+		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dest : Board`Coords := [4,5];
+		dcl mousePiece : Piece := board.pieces(src);
+		
+		board.startGame();
+		assertEqual(board.tiles(src).type, WaterTile`TYPE);
+		assertEqual(board.tiles(dest).type, WaterTile`TYPE);
+		board.play(src, dest);
+		assertEqual(board.pieces(dest), mousePiece);
+		assertTrue(src not in set dom board.pieces);
+	);
+	
+	public testSwimMoveToWater: () ==> ()
+	testSwimMoveToWater() == (
 		dcl src : Board`Coords := [2,5];
 		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
 		dcl board : Board := new Board(pieces);
@@ -27,6 +43,22 @@ operations
 		board.startGame();
 		assertEqual(board.tiles(src).type, PlainTile`TYPE);
 		assertEqual(board.tiles(dest).type, WaterTile`TYPE);
+		board.play(src, dest);
+		assertEqual(board.pieces(dest), mousePiece);
+		assertTrue(src not in set dom board.pieces);
+	);
+	
+	public testSwimMoveFromWater: () ==> ()
+	testSwimMoveFromWater() == (
+		dcl src : Board`Coords := [3,5];
+		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dest : Board`Coords := [2,5];
+		dcl mousePiece : Piece := board.pieces(src);
+		
+		board.startGame();
+		assertEqual(board.tiles(src).type, WaterTile`TYPE);
+		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
 		board.play(src, dest);
 		assertEqual(board.pieces(dest), mousePiece);
 		assertTrue(src not in set dom board.pieces);
@@ -159,6 +191,24 @@ operations
 		assertTrue(dogPieceDefender not in set rng board.pieces);
 	);
 	
+	public testCaptureRatInWater: () ==> ()
+	testCaptureRatInWater() == (
+		dcl src: Board`Coords := [3,5];
+		dcl dest : Board`Coords := [4, 5];
+		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>), dest |-> new RatPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl ratPieceAttacker : Piece := board.pieces(src);
+		dcl ratPieceDefender : Piece := board.pieces(dest);
+		
+		board.startGame();
+		assertEqual(board.tiles(src).type, WaterTile`TYPE);
+		assertEqual(board.tiles(dest).type, WaterTile`TYPE);
+		board.play(src, dest);
+		assertEqual(board.pieces(dest), ratPieceAttacker);
+		assertTrue(src not in set dom board.pieces);
+		assertTrue(ratPieceDefender not in set rng board.pieces);
+	);
+	
 	public testWinByArrivingToDen: () ==> ()
 	testWinByArrivingToDen() == (
 		dcl src: Board`Coords := [8, 2];
@@ -196,7 +246,9 @@ operations
 		
 		
 		IO`println("SwimMove");
-		testSwimMove();
+		testSwimMoveInWater();
+		testSwimMoveToWater();
+		testSwimMoveFromWater();
 		
 		
 		IO`println("JumpMove");
@@ -211,6 +263,8 @@ operations
 		testCaptureDefenderWin();
 		testCaptureRatAndElephant();
 		testCaptureSameRank();
+		testCaptureRatInWater();
+		
 		
 		IO`println("Win conditions");
 		testWinByArrivingToDen();
