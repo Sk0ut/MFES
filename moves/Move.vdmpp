@@ -1,11 +1,9 @@
 class Move
 types
 	public MoveType = seq1 of char;
-values
--- TODO Define values here
 instance variables
-	private type : MoveType;
-	private allowedPieces : set of Piece`PieceType
+	public type : MoveType;
+	public allowedPieces : set of Piece`PieceType
 operations
 	public Move: MoveType * set of Piece`PieceType ==> Move
 	Move(argType, argAllowedPieces) == (
@@ -18,12 +16,6 @@ operations
 	public pure validMove: Board * Board`Coords * Board`Coords ==> bool
 	validMove(board, src, dest) == is subclass responsibility
 	pre src in set dom board.pieces and dest in set dom board.tiles and src <> dest;
-	
-	public pure getType: () ==> MoveType
-	getType() == return type;
-	
-	public pure getAllowedPieces: () ==> set of Piece`PieceType
-	getAllowedPieces() == return allowedPieces;
 	
 functions
 	public sameRow: Board`Coords * Board`Coords +> bool

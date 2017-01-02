@@ -1,17 +1,13 @@
 class Piece
 types
--- TODO Define types here
 	public PieceType = seq1 of char;
-	public Owner = <PLAYER1> | <PLAYER2>;
-values
--- TODO Define values here
+	public Owner = Board`Player;
 instance variables
 	public type : PieceType;
 	public owner : Owner;
 	public rank : nat1;
 	public steppableTiles : set of seq1 of char
 operations
--- TODO Define operations here
 	public Piece : PieceType * Owner * nat1 * set of seq1 of char ==> Piece
 		Piece(tt, ow, val, stepTiles) == (
 			type := tt;
@@ -31,10 +27,4 @@ operations
 			return self;
 		)
 		post type = tt and owner = ow and rank = val;
-		
-		
-functions
--- TODO Define functiones here
-traces
--- TODO Define Combinatorial Test Traces here
 end Piece

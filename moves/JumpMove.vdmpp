@@ -1,15 +1,11 @@
 class JumpMove is subclass of Move
-types
--- TODO Define types here
 values
 	public TYPE : MoveType = "Jump";
 	public PIECES : set of Piece`PieceType = {LionPiece`TYPE, TigerPiece`TYPE};
-instance variables
--- TODO Define instance variables here
 operations
 	public JumpMove : () ==> JumpMove
 	JumpMove() == Move(TYPE, PIECES)
-	post getType() = TYPE and getAllowedPieces() = PIECES;
+	post self.type = TYPE and self.allowedPieces = PIECES;
 
 	public pure validMove: Board * Board`Coords * Board`Coords ==> bool
 	validMove(board, src, dest) == (
@@ -17,7 +13,7 @@ operations
 		dcl srcTile : Tile := board.tiles(src);
 		dcl destTile : Tile := board.tiles(dest);
 		
-		if piece.type not in set getAllowedPieces() then
+		if piece.type not in set self.allowedPieces then
 			return false;
 			
 		if srcTile.type = WaterTile`TYPE or destTile.type = WaterTile`TYPE then
@@ -57,7 +53,4 @@ operations
 		return true; 
 	)
 	pre src in set dom board.pieces and dest in set dom board.tiles and src <> dest;
-functions
-traces
--- TODO Define Combinatorial Test Traces here
 end JumpMove

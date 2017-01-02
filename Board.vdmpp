@@ -117,6 +117,7 @@ instance variables
 operations
 		public Board : () ==> Board
 		Board() == Board(DEFAULT_TILES, DEFAULT_PIECES)
+		pre dom DEFAULT_PIECES subset dom DEFAULT_TILES
 		post tiles = DEFAULT_TILES and pieces = DEFAULT_PIECES;
 		
 		public Board : Pieces ==> Board
@@ -129,7 +130,7 @@ operations
 				tiles := bt;
 				pieces := p;
 				winner := nil;
-				currentPlayer := <PLAYER1>;
+				currentPlayer := nil;
 				state := <SETUP>;
 				return self
 		)
@@ -168,6 +169,9 @@ operations
 		
 		public pure validMove : Coords * Coords ==> bool
 		validMove(source, dest) == (
+				-- Se não estiver na fase de jogo, o movimento é inválido
+				if state <> <PLAY> then return false;
+		
 				-- Se as posições não existirem no tabuleiro, o movimento é inválido
 				if not ({source, dest} subset dom self.tiles) then return false; 
 		
@@ -185,8 +189,7 @@ operations
 				
 				-- O movimento só é válido se uma das jogadas permitidas o considerar válido
 				return exists move in set self.allowedMoves & move.validMove(self, source, dest);
-		)
-		pre state = <PLAY>;
+		);
 		
 		private removePiece : Coords ==> ()
 		removePiece(coord) == (
@@ -213,8 +216,8 @@ operations
 						winner := w;
 					);
 		)
-		pre state = <PLAY>
-		post state in set {<PLAY>, <END>};
+		pre state = <PLAY> and validMove(src, dest)
+		post state in set {<PLAY>, <END>} and currentPlayer <> currentPlayer~;
 		
 		private movePiece : Coords * Coords ==> ()
 		movePiece(src, dest) == (
@@ -281,10 +284,6 @@ operations
 				if self.currentPlayer = <PLAYER1> then currentPlayer := <PLAYER2>
 				else currentPlayer := <PLAYER1>
 		)
-		pre state = <PLAY>;
-
-functions
--- TODO Define functiones here
-traces
--- TODO Define Combinatorial Test Traces here
+		pre state = <PLAY>
+		post currentPlayer <> currentPlayer~;
 end Board

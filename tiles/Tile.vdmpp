@@ -1,9 +1,7 @@
 class Tile
 types
 	public TileType = seq1 of char;
-	public Owner = <PLAYER1> | <PLAYER2>;
-values
--- TODO Define values here
+	public Owner = Board`Player;
 instance variables
 	public type : TileType;
 	public owner : [Owner];
@@ -15,7 +13,4 @@ operations
 		return self
 	)
 	post type = tt and owner = ow;
-functions
-traces
--- TODO Define Combinatorial Test Traces here
 end Tile

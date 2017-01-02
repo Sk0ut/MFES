@@ -1,18 +1,8 @@
 class PlainTile is subclass of Tile
-types
--- TODO Define types here
 values
--- TODO Define values here
 	public TYPE : TileType = "PlainTile";
-instance variables
--- TODO Define instance variables here
 operations
--- TODO Define operations here
 	public PlainTile: () ==> PlainTile
 		PlainTile() == Tile(TYPE, nil)
-	post type = TYPE and owner = nil
-functions
--- TODO Define functiones here
-traces
--- TODO Define Combinatorial Test Traces here
+	post type = TYPE and owner = nil;
 end PlainTile
