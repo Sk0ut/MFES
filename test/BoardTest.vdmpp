@@ -16,6 +16,20 @@ operations
 		assertTrue(src not in set dom board.pieces);
 	);
 	
+	public testStepMoveToOwnDenBlocked: () ==> ()
+	testStepMoveToOwnDenBlocked() == (
+		dcl src : Board`Coords := [0,2];
+		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dest : Board`Coords := [0,3];
+		dcl ratPiece : Piece := board.pieces(src);
+		
+		board.startGame();
+		assertEqual(board.tiles(dest).type, DenTile`TYPE);
+		assertEqual(board.tiles(dest).owner, ratPiece.owner);
+		assertTrue(not board.validMove(src, dest));
+	);
+	
 	public testSwimMoveInWater: () ==> ()
 	testSwimMoveInWater() == (
 		dcl src : Board`Coords := [3,5];
@@ -209,6 +223,26 @@ operations
 		assertTrue(ratPieceDefender not in set rng board.pieces);
 	);
 	
+	
+	public testCaptureHigherRankInTrap : () ==> ()
+	testCaptureHigherRankInTrap() == (
+		dcl src: Board`Coords := [0,1];
+		dcl dest : Board`Coords := [0, 2];
+		dcl pieces : Board`Pieces := {src |-> new DogPiece(<PLAYER1>), dest |-> new LionPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dogPiece : Piece := board.pieces(src);
+		dcl lionPiece : Piece := board.pieces(dest);
+		
+		board.startGame();
+		assertEqual(board.tiles(dest).type, TrapTile`TYPE);
+		assertEqual(board.tiles(dest).owner, dogPiece.owner);
+		assertTrue(dogPiece.rank < lionPiece.rank);
+		board.play(src, dest);
+		assertEqual(board.pieces(dest), dogPiece);
+		assertTrue(src not in set dom board.pieces);
+		assertTrue(lionPiece not in set rng board.pieces);
+	);
+	
 	public testWinByArrivingToDen: () ==> ()
 	testWinByArrivingToDen() == (
 		dcl src: Board`Coords := [8, 2];
@@ -243,6 +277,7 @@ operations
 	testAll() == (
 		IO`println("StepMove");
 		testStepMove();
+		testStepMoveToOwnDenBlocked();
 		
 		
 		IO`println("SwimMove");
@@ -264,6 +299,7 @@ operations
 		testCaptureRatAndElephant();
 		testCaptureSameRank();
 		testCaptureRatInWater();
+		testCaptureHigherRankInTrap();
 		
 		
 		IO`println("Win conditions");
