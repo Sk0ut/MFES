@@ -8,9 +8,10 @@ operations
 		dcl dest : Board`Coords := [3,6];
 		dcl mousePiece : Piece := board.pieces(src);
 		
+		board.startGame();
 		assertEqual(mousePiece.type, RatPiece`TYPE);
 		assertEqual(mousePiece.owner, <PLAYER1>);
-		board.movePiece(src, dest);
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), mousePiece);
 		assertTrue(src not in set dom board.pieces);
 	);
@@ -23,9 +24,10 @@ operations
 		dcl dest : Board`Coords := [3,5];
 		dcl mousePiece : Piece := board.pieces(src);
 		
+		board.startGame();
 		assertEqual(board.tiles(src).type, PlainTile`TYPE);
 		assertEqual(board.tiles(dest).type, WaterTile`TYPE);
-		board.movePiece(src, dest);
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), mousePiece);
 		assertTrue(src not in set dom board.pieces);
 	);
@@ -38,9 +40,10 @@ operations
 		dcl dest : Board`Coords := [6, 5];
 		dcl lionPiece : Piece := board.pieces(src);
 		
+		board.startGame();
 		assertEqual(board.tiles(src).type, PlainTile`TYPE);
 		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
-		board.movePiece(src, dest);
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), lionPiece);
 		assertTrue(src not in set dom board.pieces);
 	);
@@ -53,9 +56,10 @@ operations
 		dcl dest : Board`Coords := [3, 3];
 		dcl lionPiece : Piece := board.pieces(src);
 		
+		board.startGame();
 		assertEqual(board.tiles(src).type, PlainTile`TYPE);
 		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
-		board.movePiece(src, dest);
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), lionPiece);
 		assertTrue(src not in set dom board.pieces);
 	);
@@ -67,6 +71,7 @@ operations
 		dcl board : Board := new Board(pieces);
 		dcl dest : Board`Coords := [6, 5];
 		
+		board.startGame();
 		assertEqual(board.tiles(src).type, PlainTile`TYPE);
 		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
 		assertTrue(not board.validMove(src, dest));
@@ -81,7 +86,8 @@ operations
 		dcl lionPiece : Piece := board.pieces(src);
 		dcl dogPiece : Piece := board.pieces(dest);
 		
-		board.movePiece(src, dest);
+		board.startGame();
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), lionPiece);
 		assertTrue(src not in set dom board.pieces);
 		assertTrue(dogPiece not in set rng board.pieces);
@@ -96,9 +102,10 @@ operations
 		dcl lionPiece : Piece := board.pieces(src);
 		dcl ratPiece : Piece := board.pieces(dest);
 		
+		board.startGame();
 		assertEqual(board.tiles(src).type, PlainTile`TYPE);
 		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
-		board.movePiece(src, dest);
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), lionPiece);
 		assertTrue(src not in set dom board.pieces);
 		assertTrue(ratPiece not in set rng board.pieces);
@@ -113,7 +120,8 @@ operations
 		dcl ratPiece : Piece := board.pieces(src);
 		dcl dogPiece : Piece := board.pieces(dest);
 		
-		board.movePiece(src, dest);
+		board.startGame();
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), dogPiece);
 		assertTrue(src not in set dom board.pieces);
 		assertTrue(ratPiece not in set rng board.pieces);
@@ -128,7 +136,8 @@ operations
 		dcl ratPiece : Piece := board.pieces(src);
 		dcl elephantPiece : Piece := board.pieces(dest);
 		
-		board.movePiece(src, dest);
+		board.startGame();
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), ratPiece);
 		assertTrue(src not in set dom board.pieces);
 		assertTrue(elephantPiece not in set rng board.pieces);
@@ -143,10 +152,41 @@ operations
 		dcl dogPieceAttacker : Piece := board.pieces(src);
 		dcl dogPieceDefender : Piece := board.pieces(dest);
 		
-		board.movePiece(src, dest);
+		board.startGame();
+		board.play(src, dest);
 		assertEqual(board.pieces(dest), dogPieceAttacker);
 		assertTrue(src not in set dom board.pieces);
 		assertTrue(dogPieceDefender not in set rng board.pieces);
+	);
+	
+	public testWinByArrivingToDen: () ==> ()
+	testWinByArrivingToDen() == (
+		dcl src: Board`Coords := [8, 2];
+		dcl dest : Board`Coords := [8, 3];
+		dcl pieces : Board`Pieces := {src |-> new DogPiece(<PLAYER1>), [6, 6] |-> new DogPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		
+		board.startGame();
+		assertEqual(board.state, <PLAY>);
+		assertEqual(board.tiles(dest).type, DenTile`TYPE);
+		assertEqual(board.tiles(dest).owner, <PLAYER2>);
+		board.play(src, dest);
+		assertEqual(board.state, <END>);
+		assertEqual(board.winner, <PLAYER1>);
+	);
+	
+	public testWinByCapturingAllPieces: () ==> ()
+	testWinByCapturingAllPieces() == (
+		dcl src: Board`Coords := [2,5];
+		dcl dest : Board`Coords := [2, 6];
+		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), dest |-> new DogPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		
+		board.startGame();
+		board.play(src, dest);
+		assertEqual(board.state, <END>);
+		assertEqual(board.winner, <PLAYER1>);
+		assertTrue(not exists piece in set rng board.pieces & piece.owner = <PLAYER2>);
 	);
 	
 	public testAll: () ==> ()
@@ -172,6 +212,9 @@ operations
 		testCaptureRatAndElephant();
 		testCaptureSameRank();
 		
+		IO`println("Win conditions");
+		testWinByArrivingToDen();
+		testWinByCapturingAllPieces();
 		
 		IO`println("All tests passed");
 	);

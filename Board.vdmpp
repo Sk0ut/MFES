@@ -4,7 +4,8 @@ types
 		inv c == len(c) = 2;
 	public BoardTiles = map Coords to Tile;
 	public Pieces = map Coords to Piece;
-	public Player = <PLAYER1> | <PLAYER2> | <DRAW>;
+	public Player = <PLAYER1> | <PLAYER2>;
+	public GameState = <SETUP> | <PLAY> | <END>
 values
 	public ROW : nat1 = 1;
 	public COL : nat1 = 2;
@@ -104,11 +105,14 @@ instance variables
 	public tiles: BoardTiles;
 	public pieces: Pieces;
 	private allowedMoves : set of Move := {new StepMove(), new JumpMove(), new SwimMove()};
-	public currentPlayer : Player;
+	public currentPlayer : [Player];
 	public winner : [Player];
+	public state : GameState;
 	
 	inv validBoard();
 	inv dom pieces subset dom tiles;
+	inv winner <> nil <=> state = <END>;
+	inv state = <PLAY> => currentPlayer <> nil;
 
 operations
 		public Board : () ==> Board
@@ -126,13 +130,30 @@ operations
 				pieces := p;
 				winner := nil;
 				currentPlayer := <PLAYER1>;
+				state := <SETUP>;
 				return self
 		)
 		pre dom p subset dom bt
 		post tiles = bt and pieces = p;
 		
-		-- MOVE
+		public startGame : () ==> ()
+		startGame() == (
+			atomic (
+				state := <PLAY>;
+				currentPlayer := <PLAYER1>;
+			);
+			
+			let w : [Player] = checkWinCon() in
+				if w <> nil then
+					atomic (
+						state := <END>;
+						winner := w;
+					);
+		)
+		pre state = <SETUP>
+		post state in set {<PLAY>, <END>};
 		
+		-- MOVE
 		public pure validBoard : () ==> bool
 		validBoard() == (
 				for all p in set dom self.pieces do
@@ -164,7 +185,8 @@ operations
 				
 				-- O movimento só é válido se uma das jogadas permitidas o considerar válido
 				return exists move in set self.allowedMoves & move.validMove(self, source, dest);
-		);
+		)
+		pre state = <PLAY>;
 		
 		private removePiece : Coords ==> ()
 		removePiece(coord) == (
@@ -180,7 +202,21 @@ operations
 		pre coord not in set dom self.pieces and coord in set dom self.tiles
 		post self.pieces(coord) = piece;
 		
-		public movePiece : Coords * Coords ==> ()
+		public play : Coords * Coords ==> ()
+		play(src, dest) == (
+			movePiece(src, dest);
+			changePlayer();
+			let w : [Player] = checkWinCon() in
+				if w <> nil then
+					atomic (
+						state := <END>;
+						winner := w;
+					);
+		)
+		pre state = <PLAY>
+		post state in set {<PLAY>, <END>};
+		
+		private movePiece : Coords * Coords ==> ()
 		movePiece(src, dest) == (
 			dcl pieceToMove : Piece := self.pieces(src);
 			
@@ -195,15 +231,13 @@ operations
 				removePiece(src);
 				addPiece(dest, pieceToMove);
 			);
-			
-			changePlayer();
 		)
-		pre validMove(src, dest)
+		pre validMove(src, dest) and state = <PLAY>
 		post src not in set dom pieces and dest in set dom pieces;
 		
 		
 		-- WINCON
-		public checkWinCon : () ==> Player
+		public checkWinCon : () ==> [Player]
 		checkWinCon() == (
 				dcl playersWithPieces : set of Piece`Owner := {};
 				-- If one of the dens is occupied, the player that occupies it won the game
@@ -218,9 +252,9 @@ operations
 				);
 				if <PLAYER1> in set playersWithPieces and <PLAYER2> not in set playersWithPieces  then return <PLAYER1>
 				elseif <PLAYER2> in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <PLAYER2>
-				elseif <PLAYER2> not in set playersWithPieces and <PLAYER1> not in set playersWithPieces  then return <DRAW>
 				else return nil
-		);
+		)
+		pre state = <PLAY>;
 		
 		-- CAPTURE
 		public capture : Coords * Piece * Piece ==> Piece
@@ -239,7 +273,7 @@ operations
 				if attacker.rank >= defender.rank then return attacker
 				else return defender;
 		)
-		pre coord in set dom pieces and self.pieces(coord) = defender;
+		pre coord in set dom pieces and self.pieces(coord) = defender and state = <PLAY>;
 		
 		-- CHANGE PLAYER
 		private changePlayer : () ==> ()
@@ -247,6 +281,7 @@ operations
 				if self.currentPlayer = <PLAYER1> then currentPlayer := <PLAYER2>
 				else currentPlayer := <PLAYER1>
 		)
+		pre state = <PLAY>;
 
 functions
 -- TODO Define functiones here
