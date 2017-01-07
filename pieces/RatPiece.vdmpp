@@ -4,6 +4,6 @@ values
 	public RANK : nat1 = 1;
 operations
 	public RatPiece: Owner ==> RatPiece
-				RatPiece(ow) == Piece(TYPE, ow, RANK, {"PlainTile", "TrapTile", "DenTile", "WaterTile"})
+				RatPiece(ow) == Piece(TYPE, ow, RANK, {PlainTile`TYPE, TrapTile`TYPE, DenTile`TYPE, WaterTile`TYPE})
 	post type = TYPE and owner = ow and rank = RANK;
 end RatPiece
