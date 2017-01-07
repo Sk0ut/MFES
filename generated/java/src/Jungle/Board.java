@@ -408,7 +408,7 @@ public class Board {
       sb.append(getNumbers(maxY));
       sb.append(getBorder(maxY));
       for(long x = maxX-1; x >= 0; --x){
-          sb.append(maxX-x);
+          sb.append(x+1);
           sb.append(' ');
           for(long y = maxY-1; y >= 0; --y){
               sb.append("|");

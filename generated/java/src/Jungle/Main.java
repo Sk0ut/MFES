@@ -15,7 +15,7 @@ public class Main {
             System.out.println("Make your move: Xi Yi Xf Yf: ");
             String line = s.nextLine();
             String[] parts = line.split(" ");
-            board.play(SeqUtil.seq(board.getMaxX()-Long.parseLong(parts[1]),board.getMaxY()-Long.parseLong(parts[0])), SeqUtil.seq(board.getMaxX()-Long.parseLong(parts[3]), board.getMaxY()-Long.parseLong(parts[2])));
+            board.play(SeqUtil.seq(Long.parseLong(parts[1])-1,board.getMaxY()-Long.parseLong(parts[0])), SeqUtil.seq(Long.parseLong(parts[3])-1, board.getMaxY()-Long.parseLong(parts[2])));
         }
         System.out.println(board);
         System.out.println("GAME OVER! Winner: Player " + board.winner);
