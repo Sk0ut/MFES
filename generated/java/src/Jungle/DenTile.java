@@ -21,6 +21,6 @@ public class DenTile extends Tile {
 
   public String toString() {
 
-    return "DenTile{" + "TYPE = " + Utils.toString(TYPE) + "}";
+    return "o";
   }
 }

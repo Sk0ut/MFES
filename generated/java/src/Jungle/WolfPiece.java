@@ -22,11 +22,6 @@ public class WolfPiece extends Piece {
 
   public String toString() {
 
-    return "WolfPiece{"
-        + "TYPE = "
-        + Utils.toString(TYPE)
-        + ", RANK = "
-        + Utils.toString(RANK)
-        + "}";
+    return "4";
   }
 }

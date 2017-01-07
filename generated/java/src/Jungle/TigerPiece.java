@@ -22,11 +22,6 @@ public class TigerPiece extends Piece {
 
   public String toString() {
 
-    return "TigerPiece{"
-        + "TYPE = "
-        + Utils.toString(TYPE)
-        + ", RANK = "
-        + Utils.toString(RANK)
-        + "}";
+    return "6";
   }
 }

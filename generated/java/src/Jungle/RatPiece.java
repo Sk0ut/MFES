@@ -26,11 +26,6 @@ public class RatPiece extends Piece {
 
   public String toString() {
 
-    return "RatPiece{"
-        + "TYPE = "
-        + Utils.toString(TYPE)
-        + ", RANK = "
-        + Utils.toString(RANK)
-        + "}";
+    return "1";
   }
 }

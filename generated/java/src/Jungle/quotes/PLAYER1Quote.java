@@ -35,6 +35,6 @@ public class PLAYER1Quote {
 
   public String toString() {
 
-    return "<PLAYER1>";
+    return "1";
   }
 }

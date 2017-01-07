@@ -22,11 +22,6 @@ public class LionPiece extends Piece {
 
   public String toString() {
 
-    return "LionPiece{"
-        + "TYPE = "
-        + Utils.toString(TYPE)
-        + ", RANK = "
-        + Utils.toString(RANK)
-        + "}";
+    return "7";
   }
 }

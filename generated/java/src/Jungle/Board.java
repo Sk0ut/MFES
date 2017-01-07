@@ -364,29 +364,65 @@ public class Board {
     }
   }
 
-  public String toString() {
+  public long getMaxX(){
+      long maxX = 0;
+      while(tiles.containsKey(SeqUtil.seq(maxX, 0L)))
+          ++maxX;
+      return maxX;
+  }
 
-    return "Board{"
-        + "ROW = "
-        + Utils.toString(ROW)
-        + ", COL = "
-        + Utils.toString(COL)
-        + ", DEFAULT_TILES = "
-        + Utils.toString(DEFAULT_TILES)
-        + ", DEFAULT_PIECES = "
-        + Utils.toString(DEFAULT_PIECES)
-        + ", tiles := "
-        + Utils.toString(tiles)
-        + ", pieces := "
-        + Utils.toString(pieces)
-        + ", allowedMoves := "
-        + Utils.toString(allowedMoves)
-        + ", currentPlayer := "
-        + Utils.toString(currentPlayer)
-        + ", winner := "
-        + Utils.toString(winner)
-        + ", state := "
-        + Utils.toString(state)
-        + "}";
+    public long getMaxY(){
+        long maxY = 0;
+        while(tiles.containsKey(SeqUtil.seq(0l, maxY)))
+            ++maxY;
+        return maxY;
+    }
+
+  public String getNumbers(long size){
+      StringBuilder sb = new StringBuilder();
+      sb.append("   ");
+      for(int tile = 1; tile <= size; ++tile){
+          sb.append(" ");
+          sb.append(tile);
+          sb.append("  ");
+      }
+      sb.append('\n');
+      return sb.toString();
+  }
+
+  public String getBorder(long size){
+      StringBuilder sb = new StringBuilder();
+      sb.append("  +---+");
+      for(int tile = 1; tile < size; ++tile){
+          sb.append("---+");
+      }
+      sb.append('\n');
+      return sb.toString();
+  }
+
+  public String toString() {
+      StringBuilder sb = new StringBuilder();
+      long maxX = getMaxX();
+      long maxY = getMaxY();
+
+      sb.append(getNumbers(maxY));
+      sb.append(getBorder(maxY));
+      for(long x = maxX-1; x >= 0; --x){
+          sb.append(maxX-x);
+          sb.append(' ');
+          for(long y = maxY-1; y >= 0; --y){
+              sb.append("|");
+              if (pieces.containsKey(SeqUtil.seq(x, y)))
+                  sb.append(pieces.get(SeqUtil.seq(x, y)));
+              else sb.append(' ');
+              sb.append(tiles.get(SeqUtil.seq(x, y)));
+              if (pieces.containsKey(SeqUtil.seq(x, y)))
+                  sb.append(((Piece) pieces.get(SeqUtil.seq(x, y))).owner);
+              else sb.append(' ');
+          }
+          sb.append("|\n");
+          sb.append(getBorder(maxY));
+      }
+      return sb.toString();
   }
 }

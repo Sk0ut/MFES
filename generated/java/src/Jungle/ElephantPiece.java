@@ -22,11 +22,6 @@ public class ElephantPiece extends Piece {
 
   public String toString() {
 
-    return "ElephantPiece{"
-        + "TYPE = "
-        + Utils.toString(TYPE)
-        + ", RANK = "
-        + Utils.toString(RANK)
-        + "}";
+    return "8";
   }
 }

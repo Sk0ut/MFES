@@ -22,11 +22,6 @@ public class CatPiece extends Piece {
 
   public String toString() {
 
-    return "CatPiece{"
-        + "TYPE = "
-        + Utils.toString(TYPE)
-        + ", RANK = "
-        + Utils.toString(RANK)
-        + "}";
+    return "2";
   }
 }

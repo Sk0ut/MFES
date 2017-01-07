@@ -19,6 +19,6 @@ public class WaterTile extends Tile {
 
   public String toString() {
 
-    return "WaterTile{" + "TYPE = " + Utils.toString(TYPE) + "}";
+    return "~";
   }
 }

@@ -20,7 +20,6 @@ public class TrapTile extends Tile {
   public TrapTile() {}
 
   public String toString() {
-
-    return "TrapTile{" + "TYPE = " + Utils.toString(TYPE) + "}";
+    return "X";
   }
 }

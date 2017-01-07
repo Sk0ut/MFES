@@ -19,6 +19,6 @@ public class PlainTile extends Tile {
 
   public String toString() {
 
-    return "PlainTile{" + "TYPE = " + Utils.toString(TYPE) + "}";
+    return " ";
   }
 }
