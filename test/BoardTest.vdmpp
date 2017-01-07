@@ -1,6 +1,92 @@
 class BoardTest is subclass of TestCase
 operations
+	public testPlayerOrder: () ==> ()
+	testPlayerOrder() == (
+		dcl board : Board := new Board();
+		
+		board.startGame();
+		assertEqual(board.currentPlayer, <PLAYER1>);
+		board.play([2,6], [3,6]);
+		assertEqual(board.currentPlayer, <PLAYER2>);
+		board.play([6, 6], [5,6]);
+		assertEqual(board.currentPlayer, <PLAYER1>);
+	);
+	
+	
+	public testGameNotPlayableIfItStartsFinished: () ==> ()
+	testGameNotPlayableIfItStartsFinished() == (
+		dcl src : Board`Coords := [0,2];
+		dcl dest : Board`Coords := [1, 2];
+		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>)};
+		dcl board : Board := new Board(pieces);
+		
+		board.startGame();
+		assertEqual(board.state, <END>);
+		assertTrue(not board.validMove(src, dest));
+		assertEqual(board.winner, <PLAYER1>);
+	);
+	
+	
+	public testNotAllowedToMoveOtherPlayerPieces: () ==> ()
+	testNotAllowedToMoveOtherPlayerPieces() == (
+		dcl board : Board := new Board();
+		dcl adversaryPieceSrc : Board`Coords := [6,6];
+		dcl adversaryPieceDest : Board`Coords := [5,6];
+		dcl adversaryPiece : Piece := board.pieces([6,6]);
 
+		board.startGame();
+		assertEqual(board.currentPlayer, <PLAYER1>);
+		assertEqual(adversaryPiece.owner, <PLAYER2>);
+		assertTrue(not board.validMove(adversaryPieceSrc, adversaryPieceDest));
+	);
+
+	public testNotAllowedToStayInSamePlace: () ==> ()
+	testNotAllowedToStayInSamePlace() == (
+		dcl board : Board := new Board();
+		dcl srcDest : Board`Coords := [0, 0];
+		
+		board.startGame();
+		assertTrue(not board.validMove(srcDest, srcDest));
+	);
+	
+	
+	public testNotAllowedToCaptureOwnPieces: () ==> ()
+	testNotAllowedToCaptureOwnPieces() == (
+		dcl src: Board`Coords := [2,5];
+		dcl dest : Board`Coords := [2, 6];
+		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), dest |-> new DogPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl lionPiece : Piece := board.pieces(src);
+		dcl dogPiece : Piece := board.pieces(dest);
+		
+		board.startGame();
+		assertEqual(lionPiece.owner, dogPiece.owner);
+		assertTrue(not board.validMove(src, dest));
+	);
+	
+	public testSrcMustContainPiece: () ==> ()
+	testSrcMustContainPiece() == (
+		dcl src: Board`Coords := [0, 1];
+		dcl dest: Board`Coords := [1, 1];
+		dcl board : Board := new Board();
+		
+		board.startGame();
+		assertTrue(src not in set dom board.pieces);
+		assertTrue(not board.validMove(src, dest));
+	);
+	
+	public testCoordsMustBeInTheBoard: () ==> ()
+	testCoordsMustBeInTheBoard() == (
+		dcl src: Board`Coords := [2, 6];
+		dcl dest: Board`Coords := [2, 7];
+		dcl board : Board := new Board();
+		
+		board.startGame();
+		assertTrue(src in set dom board.tiles);
+		assertTrue(dest not in set dom board.tiles);
+		assertTrue(not board.validMove(src, dest));	
+	);
+	
 	public testStepMove: () ==> ()
 	testStepMove() == (
 		dcl board : Board := new Board();
@@ -243,6 +329,25 @@ operations
 		assertTrue(lionPiece not in set rng board.pieces);
 	);
 	
+	public testCaptureInEnemyTrap : () ==> ()
+	testCaptureInEnemyTrap() == (
+		dcl src: Board`Coords := [8, 1];
+		dcl dest : Board`Coords := [8, 2];
+		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), dest |-> new DogPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl lionPiece : Piece := board.pieces(src);
+		dcl dogPiece : Piece := board.pieces(dest);
+		
+		board.startGame();
+		assertEqual(board.tiles(dest).type, TrapTile`TYPE);
+		assertEqual(board.tiles(dest).owner, dogPiece.owner);
+		assertTrue(dogPiece.rank < lionPiece.rank);
+		board.play(src, dest);
+		assertEqual(board.pieces(dest), dogPiece);
+		assertTrue(src not in set dom board.pieces);
+		assertTrue(lionPiece not in set rng board.pieces);
+	);
+	
 	public testWinByArrivingToDen: () ==> ()
 	testWinByArrivingToDen() == (
 		dcl src: Board`Coords := [8, 2];
@@ -275,6 +380,18 @@ operations
 	
 	public testAll: () ==> ()
 	testAll() == (
+		IO`println("Game progression logic");
+		testPlayerOrder();
+		testGameNotPlayableIfItStartsFinished();
+		
+		IO`println("Movement");
+		testNotAllowedToMoveOtherPlayerPieces();
+		testNotAllowedToStayInSamePlace();
+		testNotAllowedToCaptureOwnPieces();
+		testSrcMustContainPiece();
+		testCoordsMustBeInTheBoard();
+	
+	
 		IO`println("StepMove");
 		testStepMove();
 		testStepMoveToOwnDenBlocked();
@@ -300,6 +417,7 @@ operations
 		testCaptureSameRank();
 		testCaptureRatInWater();
 		testCaptureHigherRankInTrap();
+		testCaptureInEnemyTrap();
 		
 		
 		IO`println("Win conditions");

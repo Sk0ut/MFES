@@ -109,7 +109,8 @@ instance variables
 	public winner : [Player];
 	public state : GameState;
 	
-	inv validBoard();
+	inv forall p in set dom pieces & tiles(p).type in set pieces(p).steppableTiles;
+	inv forall p in set dom pieces & not (tiles(p).type = DenTile`TYPE and tiles(p).owner = pieces(p).owner);
 	inv dom pieces subset dom tiles;
 	inv winner <> nil <=> state = <END>;
 	inv state = <PLAY> => currentPlayer <> nil;
@@ -153,19 +154,6 @@ operations
 		)
 		pre state = <SETUP>
 		post state in set {<PLAY>, <END>};
-		
-		-- MOVE
-		public pure validBoard : () ==> bool
-		validBoard() == (
-				for all p in set dom self.pieces do
-				(
-					-- Se algum animal estiver num tile que nao pode estar, o board e invalido
-					if self.tiles(p).type not in set self.pieces(p).steppableTiles then return false;
-					-- Se um animal de algum jogador estiver no seu den, o board e invalido
-					if self.tiles(p).type = DenTile`TYPE and self.tiles(p).owner = self.pieces(p).owner then return false
-				);
-				return true;
-		);
 		
 		public pure validMove : Coords * Coords ==> bool
 		validMove(source, dest) == (
