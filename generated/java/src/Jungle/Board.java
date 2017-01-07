@@ -420,9 +420,10 @@ public class Board {
                   sb.append(((Piece) pieces.get(SeqUtil.seq(x, y))).owner);
               else sb.append(' ');
           }
-          sb.append("|\n");
+          sb.append("| "+(x+1)+"\n");
           sb.append(getBorder(maxY));
       }
+      sb.append(getNumbers(maxY));
       return sb.toString();
   }
 }
