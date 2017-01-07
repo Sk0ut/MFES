@@ -166,47 +166,82 @@ operations
 	
 	public testJumpMoveVertical: () ==> ()
 	testJumpMoveVertical() == (
-		dcl src: Board`Coords := [2,5];
-		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl srcLion: Board`Coords := [2,5];
+		dcl srcTiger: Board`Coords := [6,4];
+		dcl pieces : Board`Pieces := {srcLion |-> new LionPiece(<PLAYER1>), srcTiger |-> new TigerPiece(<PLAYER2>)};
 		dcl board : Board := new Board(pieces);
-		dcl dest : Board`Coords := [6, 5];
-		dcl lionPiece : Piece := board.pieces(src);
+		dcl destLion : Board`Coords := [6, 5];
+		dcl destTiger : Board`Coords := [2, 4];
+		dcl lionPiece : Piece := board.pieces(srcLion);
+		dcl tigerPiece : Piece := board.pieces(srcTiger);
 		
 		board.startGame();
-		assertEqual(board.tiles(src).type, PlainTile`TYPE);
-		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
-		board.play(src, dest);
-		assertEqual(board.pieces(dest), lionPiece);
-		assertTrue(src not in set dom board.pieces);
+		assertEqual(board.tiles(srcLion).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destLion).type, PlainTile`TYPE);
+		board.play(srcLion, destLion);
+		assertEqual(board.pieces(destLion), lionPiece);
+		assertTrue(srcLion not in set dom board.pieces);
+		assertEqual(board.tiles(srcTiger).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destTiger).type, PlainTile`TYPE);
+		board.play(srcTiger, destTiger);
+		assertEqual(board.pieces(destTiger), tigerPiece);
+		assertTrue(srcTiger not in set dom board.pieces);
+		
 	);
 
 	public testJumpMoveHorizontal: () ==> ()
 	testJumpMoveHorizontal() == (
-		dcl src: Board`Coords := [3,0];
-		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl srcLion: Board`Coords := [3,0];
+		dcl srcTiger: Board`Coords := [4,3];
+		dcl pieces : Board`Pieces := {srcLion |-> new LionPiece(<PLAYER1>), srcTiger |-> new TigerPiece(<PLAYER2>)};
 		dcl board : Board := new Board(pieces);
-		dcl dest : Board`Coords := [3, 3];
-		dcl lionPiece : Piece := board.pieces(src);
+		dcl destLion : Board`Coords := [3, 3];
+		dcl destTiger : Board`Coords := [4, 0];
+		dcl lionPiece : Piece := board.pieces(srcLion);
+		dcl tigerPiece : Piece := board.pieces(srcTiger);
 		
 		board.startGame();
-		assertEqual(board.tiles(src).type, PlainTile`TYPE);
-		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
-		board.play(src, dest);
-		assertEqual(board.pieces(dest), lionPiece);
-		assertTrue(src not in set dom board.pieces);
+		assertEqual(board.tiles(srcLion).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destLion).type, PlainTile`TYPE);
+		board.play(srcLion, destLion);
+		assertEqual(board.pieces(destLion), lionPiece);
+		assertTrue(srcLion not in set dom board.pieces);
+		assertEqual(board.tiles(srcTiger).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destTiger).type, PlainTile`TYPE);
+		board.play(srcTiger, destTiger);
+		assertEqual(board.pieces(destTiger), tigerPiece);
+		assertTrue(srcTiger not in set dom board.pieces);
 	);
 	
 	public testJumpMoveBlocked: () ==> ()
 	testJumpMoveBlocked() == (
-		dcl src: Board`Coords := [2,5];
-		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), [4, 5] |-> new RatPiece(<PLAYER2>)};
+		dcl srcUp: Board`Coords := [2,5];
+		dcl srcDown: Board`Coords := [6,4];
+		dcl srcLeft: Board`Coords := [4, 6];
+		dcl srcRight: Board`Coords := [5, 3];
+		
+		dcl pieces : Board`Pieces := {srcUp |-> new LionPiece(<PLAYER1>), srcDown |-> new TigerPiece(<PLAYER1>),
+																	srcLeft |-> new LionPiece(<PLAYER1>), srcRight |-> new TigerPiece(<PLAYER1>),
+																	[4, 5] |-> new RatPiece(<PLAYER2>), [5, 4] |-> new RatPiece(<PLAYER1>)};
 		dcl board : Board := new Board(pieces);
-		dcl dest : Board`Coords := [6, 5];
+		dcl destUp : Board`Coords := [6, 5];
+		dcl destDown : Board`Coords := [2, 4];
+		dcl destLeft : Board`Coords := [4,3];
+		dcl destRight : Board`Coords := [5,6];
 		
 		board.startGame();
-		assertEqual(board.tiles(src).type, PlainTile`TYPE);
-		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
-		assertTrue(not board.validMove(src, dest));
+		assertEqual(board.tiles(srcUp).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destUp).type, PlainTile`TYPE);
+		assertTrue(not board.validMove(srcUp, destUp));
+		assertEqual(board.tiles(srcDown).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destDown).type, PlainTile`TYPE);
+		assertTrue(not board.validMove(srcDown, destDown));
+		assertEqual(board.tiles(srcLeft).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destLeft).type, PlainTile`TYPE);
+		assertTrue(not board.validMove(srcLeft, destLeft));
+		assertEqual(board.tiles(srcRight).type, PlainTile`TYPE);
+		assertEqual(board.tiles(destRight).type, PlainTile`TYPE);
+		assertTrue(not board.validMove(srcRight, destRight));
 	);
 	
 	public testCapture: () ==> ()
