@@ -28,10 +28,7 @@ operations
 		if destTile.type = WaterTile`TYPE then
 			return true;
 			
-		if destTile.type = PlainTile`TYPE then
-			return dest not in set dom board.pieces;
-		
-		return false;
+		return destTile.type = PlainTile`TYPE and dest not in set dom board.pieces;
 	)
 	pre src in set dom board.pieces and dest in set dom board.tiles and src <> dest;
 end SwimMove

@@ -116,6 +116,20 @@ operations
 		assertTrue(not board.validMove(src, dest));
 	);
 	
+	
+	public testNewPiecesNotAllowedToStepMove: () ==> ()
+	testNewPiecesNotAllowedToStepMove() == (
+		dcl src : Board`Coords := [0,0];
+		dcl pieces : Board`Pieces := {src |-> new Piece("NewPiece", <PLAYER1>, 20), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dest : Board`Coords := [0,1];
+		
+		board.startGame();
+		assertEqual(board.tiles(src).type, PlainTile`TYPE);
+		assertEqual(board.tiles(dest).type, PlainTile`TYPE);
+		assertTrue(not board.validMove(src, dest));
+	);
+	
 	public testSwimMoveInWater: () ==> ()
 	testSwimMoveInWater() == (
 		dcl src : Board`Coords := [3,5];
@@ -162,6 +176,19 @@ operations
 		board.play(src, dest);
 		assertEqual(board.pieces(dest), mousePiece);
 		assertTrue(src not in set dom board.pieces);
+	);
+	
+	public testCanOnlySwimOneTile: () ==> ()
+	testCanOnlySwimOneTile() == (
+		dcl src : Board`Coords := [3,5];
+		dcl pieces : Board`Pieces := {src |-> new RatPiece(<PLAYER1>), [6, 6] |-> new ElephantPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dest : Board`Coords := [5,5];
+		
+		board.startGame();
+		assertEqual(board.tiles(src).type, WaterTile`TYPE);
+		assertEqual(board.tiles(dest).type, WaterTile`TYPE);
+		assertTrue(not board.validMove(src, dest));
 	);
 	
 	public testJumpMoveVertical: () ==> ()
@@ -242,6 +269,19 @@ operations
 		assertEqual(board.tiles(srcRight).type, PlainTile`TYPE);
 		assertEqual(board.tiles(destRight).type, PlainTile`TYPE);
 		assertTrue(not board.validMove(srcRight, destRight));
+	);
+	
+	public testCantJumpToWater: () ==> ()
+	testCantJumpToWater() == (
+		dcl src: Board`Coords := [2,5];
+		dcl pieces : Board`Pieces := {src |-> new LionPiece(<PLAYER1>), [6,6] |-> new TigerPiece(<PLAYER2>)};
+		dcl board : Board := new Board(pieces);
+		dcl dest : Board`Coords := [5, 5];
+			
+		board.startGame();
+		assertEqual(board.tiles(src).type, PlainTile`TYPE);
+		assertEqual(board.tiles(dest).type, WaterTile`TYPE);
+		assertTrue(not board.validMove(src, dest));
 	);
 	
 	public testCapture: () ==> ()
@@ -430,18 +470,21 @@ operations
 		IO`println("StepMove");
 		testStepMove();
 		testStepMoveToOwnDenBlocked();
+		testNewPiecesNotAllowedToStepMove(); --coverage test
 		
 		
 		IO`println("SwimMove");
 		testSwimMoveInWater();
 		testSwimMoveToWater();
 		testSwimMoveFromWater();
+		testCanOnlySwimOneTile();
 		
 		
 		IO`println("JumpMove");
 		testJumpMoveVertical();
 		testJumpMoveHorizontal();
 		testJumpMoveBlocked();
+		testCantJumpToWater();
 		
 		
 		IO`println("Capture");
